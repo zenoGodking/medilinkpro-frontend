@@ -4,6 +4,7 @@ import { CalendarHeart, MapPinned, FileHeart, Clock, MapPin, ArrowRight } from '
 import { useAuth } from '../../context/AuthContext';
 import { getRendezVousByPatient } from '../../api/rendezVous';
 import { Card, Button, Spinner, EmptyState } from '../../components/ui';
+import PhotoFacialeCard from '../../components/PhotoFacialeCard';
 
 function formatDateHeure(iso) {
   const d = new Date(iso);
@@ -48,6 +49,8 @@ export default function DashboardPage() {
         </h1>
         <p className="text-(--color-ink-600) mt-1">Voici un apercu de votre suivi medical.</p>
       </div>
+
+      <PhotoFacialeCard />
 
       {/* Signature : carte "prochain rendez-vous" en evidence */}
       {loading ? (

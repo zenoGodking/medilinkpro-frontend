@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import {
   Stethoscope, MapPin, FileHeart, CalendarCheck, QrCode, ShieldCheck,
-  ArrowRight, Search, Navigation, BadgeCheck, ClipboardList, Building2,
+  ArrowRight, Search, Navigation, BadgeCheck, HeartPulse, Building2,
   UserCog, ChevronRight,
 } from 'lucide-react';
 import { Button } from '../../components/ui';
@@ -27,9 +27,9 @@ const ESPACES = [
     bar: 'bg-(--color-petrol-600)',
   },
   {
-    role: 'Secretaire',
-    icon: ClipboardList,
-    description: "Coordonnez les rendez-vous et l'accueil des patients pour votre etablissement.",
+    role: 'Infirmier(e)',
+    icon: HeartPulse,
+    description: "Recevez les demandes de soins a domicile des patients proches de vous et guidez-vous jusqu'a eux.",
     accent: 'text-(--color-amber-500)',
     bg: 'bg-(--color-amber-400)/20',
     bar: 'bg-(--color-amber-400)',
@@ -253,7 +253,7 @@ export default function LandingPage() {
               Un espace pense pour chaque metier de la sante.
             </h2>
             <p className="text-(--color-ink-600) mt-3">
-              Patient, medecin, secretaire, directeur d'etablissement ou administrateur :
+              Patient, medecin, infirmier(e), directeur d'etablissement ou administrateur :
               chacun retrouve les outils qui lui correspondent.
             </p>
           </div>

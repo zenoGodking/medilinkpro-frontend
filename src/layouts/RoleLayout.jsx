@@ -1,9 +1,9 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LogOut, Stethoscope } from 'lucide-react';
+import { LogOut, Stethoscope, ScanFace } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 /**
- * Layout partage par tous les espaces authentifies (Patient, Medecin, Secretaire,
+ * Layout partage par tous les espaces authentifies (Patient, Medecin, Infirmier,
  * Directeur, Admin). Les items de navigation sont fournis par chaque espace via
  * navItems, ce qui permet a chaque role d'avoir son propre menu tout en gardant
  * une identite visuelle et une structure communes.
@@ -56,6 +56,18 @@ export default function RoleLayout({ navItems, roleLabel, children }) {
           </nav>
 
           <div className="flex items-center gap-3">
+            {/* Identification d'urgence : accessible depuis tous les espaces */}
+            <NavLink
+              to="/urgence"
+              className={({ isActive }) =>
+                `flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-semibold transition-colors ${
+                  isActive ? 'bg-(--color-clay-500) text-white' : 'bg-(--color-clay-100) text-(--color-clay-500) hover:bg-(--color-clay-100)/70'
+                }`
+              }
+            >
+              <ScanFace size={16} strokeWidth={2} />
+              <span className="hidden sm:inline">Urgence</span>
+            </NavLink>
             <span className="hidden sm:block text-sm text-(--color-ink-600)">
               {user?.prenom} {user?.nom}
             </span>

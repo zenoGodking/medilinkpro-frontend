@@ -40,7 +40,7 @@ export default function AdminDashboardPage() {
             {enAttente.length} compte{enAttente.length > 1 ? 's' : ''} en attente de validation
           </h2>
           <p className="relative text-white/80 text-sm max-w-md">
-            Des medecins, secretaires ou directeurs attendent votre validation pour pouvoir se connecter.
+            Des medecins, infirmiers ou directeurs attendent votre validation pour pouvoir se connecter.
           </p>
           <Link
             to="/admin/comptes"

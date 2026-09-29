@@ -3,6 +3,8 @@ import { FileHeart, Stethoscope, Pill, FlaskConical, ShieldCheck } from 'lucide-
 import { useAuth } from '../../context/AuthContext';
 import { getDossierMedicalByPatient } from '../../api/patients';
 import { Card, Spinner, EmptyState } from '../../components/ui';
+import InfosUrgenceCard from '../../components/InfosUrgenceCard';
+import AutorisationsMedecinsCard from '../../components/AutorisationsMedecinsCard';
 
 function formatDate(iso) {
   if (!iso) return '—';
@@ -63,6 +65,9 @@ export default function DossierMedicalPage() {
         <ShieldCheck size={17} />
         Dossier chiffre et confidentiel
       </div>
+
+      <InfosUrgenceCard patientId={user.userId} />
+      <AutorisationsMedecinsCard />
 
       {/* Consultations */}
       <section>

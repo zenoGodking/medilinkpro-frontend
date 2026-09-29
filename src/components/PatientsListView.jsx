@@ -5,7 +5,7 @@ import { Card, Spinner, EmptyState, PageHeader } from './ui';
 
 /**
  * Vue lecture-seule de la liste des patients, partagee entre les espaces
- * Secretaire et Directeur (memes donnees, memes droits de lecture).
+ * Directeur (memes donnees, memes droits de lecture).
  */
 export default function PatientsListView({ description }) {
   const [patients, setPatients] = useState([]);

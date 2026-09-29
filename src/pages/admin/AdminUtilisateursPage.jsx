@@ -9,7 +9,6 @@ const FILTRES_ROLE = [
   { value: 'PATIENT', label: 'Patient' },
   { value: 'MEDECIN', label: 'Medecin' },
   { value: 'INFIRMIER', label: 'Infirmier(e)' },
-  { value: 'SECRETAIRE', label: 'Secretaire' },
   { value: 'DIRECTEUR', label: 'Directeur' },
   { value: 'ADMIN', label: 'Administrateur' },
 ];

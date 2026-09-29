@@ -6,7 +6,6 @@
 export const HOME_BY_ROLE = {
   PATIENT: '/patient',
   MEDECIN: '/medecin',
-  SECRETAIRE: '/secretaire',
   DIRECTEUR: '/directeur',
   ADMIN: '/admin',
   INFIRMIER: '/infirmier',

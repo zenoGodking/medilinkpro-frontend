@@ -1,6 +1,7 @@
 import { api } from './client';
 
-// Patient : envoyer une alerte de soins a domicile a toutes les infirmieres connectees.
+// Patient : envoyer une alerte de soins a domicile. Avec latitude/longitude, elle est proposee
+// d'abord aux infirmieres les plus proches ; sans position, a toutes les infirmieres connectees.
 export async function creerAlerte(patientId, payload) {
   const { data } = await api.post(`/api/alertes/patients/${patientId}`, payload);
   return data;
@@ -61,5 +62,11 @@ export async function getInterventionsEnCours(infirmierId) {
 // Infirmier : note moyenne recue sur l'ensemble de ses interventions terminees.
 export async function getNoteMoyenneInfirmier(infirmierId) {
   const { data } = await api.get(`/api/alertes/infirmiers/${infirmierId}/note-moyenne`);
+  return data;
+}
+
+// Patient : derniere position connue de l'infirmiere en route (la suite arrive sur /user/queue/suivi).
+export async function getSuiviInfirmier(alerteId) {
+  const { data } = await api.get(`/api/alertes/${alerteId}/suivi`);
   return data;
 }

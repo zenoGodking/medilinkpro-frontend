@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { API_BASE_URL } from '../api/client';
@@ -14,8 +14,11 @@ import { API_BASE_URL } from '../api/client';
  */
 export function useAlerteSocket(token, subscriptions) {
   const [connected, setConnected] = useState(false);
+  const clientRef = useRef(null);
   const subscriptionsRef = useRef(subscriptions);
-  subscriptionsRef.current = subscriptions;
+  useEffect(() => {
+    subscriptionsRef.current = subscriptions;
+  }, [subscriptions]);
 
   useEffect(() => {
     if (!token) return undefined;
@@ -41,15 +44,24 @@ export function useAlerteSocket(token, subscriptions) {
     });
 
     client.activate();
+    clientRef.current = client;
 
     return () => {
+      clientRef.current = null;
       client.deactivate();
     };
     // Se reconnecte uniquement si le token change (les callbacks passes dans
     // `subscriptions` doivent s'appuyer sur des setState fonctionnels pour
     // rester a jour sans figurer dans les dependances).
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
-  return { connected };
+  // Envoie un message au backend (ex: position GPS de l'infirmiere) ; ignore si deconnecte.
+  const publish = useCallback((destination, payload) => {
+    const client = clientRef.current;
+    if (client?.connected) {
+      client.publish({ destination, body: JSON.stringify(payload) });
+    }
+  }, []);
+
+  return { connected, publish };
 }

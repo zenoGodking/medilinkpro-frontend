@@ -1,68 +1,82 @@
-import { useEffect, useState } from 'react';
-import { Users } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
-import { getRendezVousByMedecin } from '../../api/rendezVous';
-import { Card, Spinner, EmptyState, PageHeader } from '../../components/ui';
+import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Users, Search, PenLine, Eye } from 'lucide-react';
+import { getAllPatients } from '../../api/patients';
+import { getPatientsEcritureAutorisee } from '../../api/carnets';
+import { Card, Spinner, EmptyState, PageHeader, TextInput } from '../../components/ui';
 
+/**
+ * Tous les carnets patients sont consultables par un medecin ; l'ecriture n'est possible
+ * que pour ses patients (autorisation donnee par le patient, ou ancien patient).
+ */
 export default function MedecinPatientsPage() {
-  const { user } = useAuth();
   const [patients, setPatients] = useState([]);
+  const [ecriture, setEcriture] = useState(new Map());
+  const [recherche, setRecherche] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
-    async function load() {
-      try {
-        const data = await getRendezVousByMedecin(user.userId);
-        const seen = new Map();
-        data.forEach((r) => {
-          if (!seen.has(r.patientId)) {
-            seen.set(r.patientId, { id: r.patientId, nom: r.patientNomComplet, dernierRdv: r.dateHeure });
-          } else if (new Date(r.dateHeure) > new Date(seen.get(r.patientId).dernierRdv)) {
-            seen.get(r.patientId).dernierRdv = r.dateHeure;
-          }
-        });
-        if (!cancelled) setPatients(Array.from(seen.values()));
-      } catch {
-        if (!cancelled) setPatients([]);
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-    load();
+    Promise.all([getAllPatients(), getPatientsEcritureAutorisee()])
+      .then(([tous, accessibles]) => {
+        if (cancelled) return;
+        setPatients(tous);
+        setEcriture(new Map(accessibles.map((p) => [p.id, p.motif])));
+      })
+      .catch(() => !cancelled && setPatients([]))
+      .finally(() => !cancelled && setLoading(false));
     return () => { cancelled = true; };
-  }, [user.userId]);
+  }, []);
+
+  const affiches = useMemo(() => {
+    const q = recherche.trim().toLowerCase();
+    return patients
+      .filter((p) => !q || `${p.prenom} ${p.nom}`.toLowerCase().includes(q))
+      // Mes patients (ecriture possible) en premier
+      .sort((a, b) => Number(ecriture.has(b.id)) - Number(ecriture.has(a.id)));
+  }, [patients, recherche, ecriture]);
 
   if (loading) {
-    return (
-      <div className="flex justify-center py-20">
-        <Spinner className="w-7 h-7" />
-      </div>
-    );
+    return <div className="flex justify-center py-20"><Spinner className="w-7 h-7" /></div>;
   }
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Mes patients" description="Les patients ayant pris rendez-vous avec vous." />
+      <PageHeader
+        title="Carnets des patients"
+        description="Vous pouvez consulter tous les carnets. Vous ne pouvez ecrire que dans celui de vos patients (autorisation du patient ou ancien patient)."
+      />
 
-      {patients.length === 0 ? (
-        <Card>
-          <EmptyState icon={Users} title="Aucun patient pour le moment" description="Vos patients apparaitront ici apres leur premier rendez-vous." />
-        </Card>
+      <div className="relative max-w-md">
+        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--color-ink-300)" />
+        <TextInput style={{ paddingLeft: "2.25rem" }} placeholder="Rechercher un patient..." value={recherche} onChange={(e) => setRecherche(e.target.value)} />
+      </div>
+
+      {affiches.length === 0 ? (
+        <Card><EmptyState icon={Users} title="Aucun patient trouve" description="Modifiez votre recherche." /></Card>
       ) : (
         <div className="grid sm:grid-cols-2 gap-3">
-          {patients.map((p) => (
-            <Card key={p.id} className="p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-(--color-petrol-50) flex items-center justify-center text-(--color-petrol-600) font-display font-semibold shrink-0">
-                {p.nom?.charAt(0) || '?'}
-              </div>
-              <div>
-                <p className="font-medium text-(--color-ink-900)">{p.nom}</p>
-                <p className="text-xs text-(--color-ink-300)">
-                  Dernier rendez-vous : {new Date(p.dernierRdv).toLocaleDateString('fr-FR')}
-                </p>
-              </div>
-            </Card>
+          {affiches.map((p) => (
+            <Link key={p.id} to={`/medecin/patients/${p.id}`}>
+              <Card className="p-4 flex items-center gap-3 hover:border-(--color-petrol-400) transition-colors">
+                <div className="w-10 h-10 rounded-full bg-(--color-petrol-50) flex items-center justify-center text-(--color-petrol-600) font-display font-semibold shrink-0">
+                  {p.prenom?.charAt(0) || '?'}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-(--color-ink-900) truncate">
+                    {p.prenom} {p.nom}
+                    {p.decede && <span className="ml-2 text-xs font-semibold text-(--color-ink-600)">(decede)</span>}
+                  </p>
+                  {ecriture.has(p.id) ? (
+                    <p className="flex items-center gap-1 text-xs font-semibold text-(--color-sage-500)">
+                      <PenLine size={12} /> {ecriture.get(p.id) === 'AUTORISATION_PATIENT' ? 'Autorise par le patient' : 'Votre patient'}
+                    </p>
+                  ) : (
+                    <p className="flex items-center gap-1 text-xs text-(--color-ink-300)"><Eye size={12} /> Lecture seule</p>
+                  )}
+                </div>
+              </Card>
+            </Link>
           ))}
         </div>
       )}

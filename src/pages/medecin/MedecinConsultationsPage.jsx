@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { FileText, Plus, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { getConsultationsByMedecin, createConsultation } from '../../api/consultations';
-import { getRendezVousByMedecin } from '../../api/rendezVous';
+import { getPatientsEcritureAutorisee } from '../../api/carnets';
+import { useSearchParams } from 'react-router-dom';
 import {
   Card, Button, Spinner, EmptyState, PageHeader, FieldLabel, TextInput, Textarea, Select,
 } from '../../components/ui';
@@ -15,27 +16,28 @@ const INITIAL_FORM = { patientId: '', motif: '', diagnostic: '', compteRendu: ''
 
 export default function MedecinConsultationsPage() {
   const { user } = useAuth();
+  // Arrivee depuis un carnet (?patient=...) : formulaire ouvert, patient preselectionne.
+  const [searchParams] = useSearchParams();
+  const patientPreselectionne = searchParams.get('patient') || '';
   const [consultations, setConsultations] = useState([]);
   const [patientsConnus, setPatientsConnus] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState(INITIAL_FORM);
+  const [showForm, setShowForm] = useState(!!patientPreselectionne);
+  const [form, setForm] = useState({ ...INITIAL_FORM, patientId: patientPreselectionne });
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
 
   async function load() {
     setLoading(true);
     try {
-      const [data, rdvs] = await Promise.all([
+      const [data, accessibles] = await Promise.all([
         getConsultationsByMedecin(user.userId),
-        getRendezVousByMedecin(user.userId),
+        getPatientsEcritureAutorisee(),
       ]);
       data.sort((a, b) => new Date(b.date) - new Date(a.date));
       setConsultations(data);
-
-      const seen = new Map();
-      rdvs.forEach((r) => seen.set(r.patientId, r.patientNomComplet));
-      setPatientsConnus(Array.from(seen.entries()).map(([id, nom]) => ({ id, nom })));
+      // Seuls les patients dans le carnet desquels le medecin peut ecrire.
+      setPatientsConnus(accessibles.map((p) => ({ id: p.id, nom: `${p.prenom} ${p.nom}` })));
     } catch {
       setConsultations([]);
     } finally {
@@ -106,7 +108,7 @@ export default function MedecinConsultationsPage() {
             <div>
               <FieldLabel>Patient</FieldLabel>
               <Select required value={form.patientId} onChange={(e) => update('patientId', e.target.value)}>
-                <option value="">Selectionner un patient</option>
+                <option value="">Selectionner un de vos patients</option>
                 {patientsConnus.map((p) => (
                   <option key={p.id} value={p.id}>{p.nom}</option>
                 ))}

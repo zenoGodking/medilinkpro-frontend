@@ -34,3 +34,9 @@ export async function getResultatsAnalyses(dossierId) {
   const { data } = await api.get(`/api/resultats-analyses/dossier/${dossierId}`);
   return data;
 }
+
+// Medecin : declarer le deces d'un patient (le proche est informe).
+export async function declarerDeces(patientId, { dateDeces, circonstances }) {
+  const { data } = await api.post(`/api/patients/${patientId}/deces`, { dateDeces, circonstances });
+  return data;
+}

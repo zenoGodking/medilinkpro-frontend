@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  Stethoscope, AlertCircle, ArrowLeft, CheckCircle2, User, ClipboardList, Building2, HeartPulse,
+  Stethoscope, AlertCircle, ArrowLeft, CheckCircle2, User, Building2, HeartPulse,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Button, TextInput, FieldLabel, Select } from '../components/ui';
+import CapturePhotoVisage from '../components/CapturePhotoVisage';
 import { homeForRole } from '../utils/roles';
 
 const GROUPES_SANGUINS = [
@@ -27,13 +28,12 @@ const ROLES = [
   { value: 'PATIENT', label: 'Patient', description: 'Suivre mon dossier medical et prendre rendez-vous', icon: User },
   { value: 'MEDECIN', label: 'Medecin', description: 'Proposer des consultations et gerer mon agenda', icon: Stethoscope },
   { value: 'INFIRMIER', label: 'Infirmier(e)', description: 'Repondre aux alertes de soins a domicile', icon: HeartPulse },
-  { value: 'SECRETAIRE', label: 'Secretaire', description: "Coordonner l'accueil et les rendez-vous", icon: ClipboardList },
   { value: 'DIRECTEUR', label: 'Directeur', description: "Superviser un etablissement de sante", icon: Building2 },
 ];
 
 const INITIAL_FORM = {
   nom: '', prenom: '', email: '', motDePasse: '', telephone: '',
-  dateNaissance: '', groupeSanguin: '', contactUrgenceNom: '', contactUrgenceTelephone: '',
+  dateNaissance: '', groupeSanguin: '', allergies: '', conditionsUrgence: '', contactUrgenceNom: '', contactUrgenceTelephone: '',
   specialite: '', numeroOrdre: '', tarif: '', ville: '', quartier: '',
 };
 
@@ -43,6 +43,8 @@ export default function RegisterPage() {
   const [role, setRole] = useState('PATIENT');
   const [form, setForm] = useState(INITIAL_FORM);
   const [pendingMessage, setPendingMessage] = useState(null);
+  // Photo du visage + empreinte faciale, obligatoires pour un patient (reconnaissance en urgence).
+  const [visage, setVisage] = useState(null);
 
   function update(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -51,6 +53,7 @@ export default function RegisterPage() {
   function handleRoleChange(value) {
     setRole(value);
     setForm(INITIAL_FORM);
+    setVisage(null);
   }
 
   async function handleSubmit(e) {
@@ -66,6 +69,8 @@ export default function RegisterPage() {
         ...(role === 'PATIENT' && {
           dateNaissance: form.dateNaissance || null,
           groupeSanguin: form.groupeSanguin || null,
+          allergies: form.allergies || null,
+          conditionsUrgence: form.conditionsUrgence || null,
           contactUrgenceNom: form.contactUrgenceNom || null,
           contactUrgenceTelephone: form.contactUrgenceTelephone || null,
         }),
@@ -78,13 +83,13 @@ export default function RegisterPage() {
         }),
       };
 
-      const response = await register(payload);
+      const response = await register(payload, role === 'PATIENT' ? visage : undefined);
 
       if (response.token) {
         // PATIENT : compte approuve immediatement, connexion directe.
         navigate(homeForRole(response.role));
       } else {
-        // MEDECIN, SECRETAIRE, DIRECTEUR : compte en attente de validation admin.
+        // MEDECIN, INFIRMIER, DIRECTEUR : compte en attente de validation admin.
         setPendingMessage(response.message);
       }
     } catch {
@@ -225,6 +230,30 @@ export default function RegisterPage() {
                     </Select>
                   </div>
                 </div>
+                <div>
+                  <FieldLabel>Allergies connues</FieldLabel>
+                  <TextInput
+                    placeholder="Penicilline, arachides... (laisser vide si aucune)"
+                    value={form.allergies}
+                    onChange={(e) => update('allergies', e.target.value)}
+                  />
+                </div>
+                <div>
+                  <FieldLabel>A signaler aux secours</FieldLabel>
+                  <TextInput
+                    placeholder="Asthme, diabete, epilepsie, pacemaker..."
+                    value={form.conditionsUrgence}
+                    onChange={(e) => update('conditionsUrgence', e.target.value)}
+                  />
+                </div>
+                <div>
+                  <FieldLabel>Photo du visage (obligatoire)</FieldLabel>
+                  <CapturePhotoVisage onResultat={setVisage} />
+                  <p className="text-xs text-(--color-ink-600) mt-1.5">
+                    En cas d'accident, elle permet aux secours de retrouver votre groupe sanguin,
+                    vos allergies et le numero de votre proche.
+                  </p>
+                </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <FieldLabel>Contact d'urgence (nom)</FieldLabel>
@@ -300,7 +329,7 @@ export default function RegisterPage() {
               </>
             )}
 
-            <Button type="submit" disabled={loading} className="w-full">
+            <Button type="submit" disabled={loading || (role === 'PATIENT' && !visage)} className="w-full">
               {loading ? 'Creation du compte...' : 'Creer mon compte'}
             </Button>
           </form>

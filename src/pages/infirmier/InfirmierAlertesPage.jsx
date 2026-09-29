@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { BellRing, MapPin, Phone, MessageSquare, Wifi, WifiOff, Clock, CheckCircle2, Star, UndoDot, ClipboardCheck, Send, Lock } from 'lucide-react';
+import { BellRing, MapPin, Phone, MessageSquare, Wifi, WifiOff, Clock, CheckCircle2, Star, UndoDot, ClipboardCheck, Send, Lock, Navigation, LocateFixed, LocateOff } from 'lucide-react';
 import {
   getAlertesActives, repondreAlerte, retracterAlerte, soumettreCompteRendu,
   getInterventionsEnCours, getNoteMoyenneInfirmier,
@@ -7,6 +7,7 @@ import {
 import { getToken } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import { useAlerteSocket } from '../../hooks/useAlerteSocket';
+import { usePositionGps } from '../../hooks/usePositionGps';
 import { Card, Button, Textarea, Spinner, EmptyState, PageHeader } from '../../components/ui';
 
 /** Petit bip synthetise (Web Audio API) pour signaler une nouvelle alerte sans fichier son externe. */
@@ -34,6 +35,16 @@ function tempsEcoule(dateIso) {
   if (minutes < 60) return `il y a ${minutes} min`;
   const heures = Math.floor(minutes / 60);
   return `il y a ${heures} h`;
+}
+
+function formatDistance(km) {
+  return km == null ? null : `a ${km.toLocaleString('fr-FR')} km`;
+}
+
+/** Itineraire vers le patient dans l'application de navigation de l'appareil (Google Maps). */
+function lienItineraire(a) {
+  if (a.latitude == null) return null;
+  return `https://www.google.com/maps/dir/?api=1&destination=${a.latitude},${a.longitude}`;
 }
 
 function CarteNoteMoyenne({ infirmierId }) {
@@ -135,11 +146,32 @@ export default function InfirmierAlertesPage() {
     });
   }, [user.userId, chargerAlertesActives]);
 
+  // /topic/alertes : alertes en diffusion generale ; /user/queue/alertes : alertes proposees
+  // a cette infirmiere parce qu'elle fait partie des plus proches du patient.
   const subscriptions = useMemo(
-    () => [{ destination: '/topic/alertes', onMessage: onAlerteMiseAJour }],
+    () => [
+      { destination: '/topic/alertes', onMessage: onAlerteMiseAJour },
+      { destination: '/user/queue/alertes', onMessage: onAlerteMiseAJour },
+    ],
     [onAlerteMiseAJour]
   );
-  const { connected } = useAlerteSocket(token, subscriptions);
+  const { connected, publish } = useAlerteSocket(token, subscriptions);
+
+  // Partage continu de la position : sert a recevoir les alertes proches, puis au suivi
+  // en temps reel par le patient pendant l'intervention.
+  const envoyerPosition = useCallback(
+    (p) => publish('/app/infirmiers/position', p),
+    [publish]
+  );
+  const { position, erreur: erreurGps } = usePositionGps(true, envoyerPosition);
+  const positionRef = useRef(null);
+  useEffect(() => {
+    positionRef.current = position;
+  }, [position]);
+  useEffect(() => {
+    // (Re)connexion : renvoie tout de suite la derniere position connue.
+    if (connected && positionRef.current) envoyerPosition(positionRef.current);
+  }, [connected, envoyerPosition]);
 
   async function handleRepondre(alerteId) {
     setErreur(null);
@@ -204,9 +236,17 @@ export default function InfirmierAlertesPage() {
     <div className="space-y-8">
       <PageHeader
         title="Alertes de soins a domicile"
-        description="Les demandes des patients apparaissent ici en temps reel."
+        description="Les demandes des patients proches de vous apparaissent ici en temps reel. Gardez cette page ouverte."
         action={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span
+              className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full ${
+                position ? 'bg-(--color-sage-100) text-(--color-sage-500)' : 'bg-(--color-clay-100) text-(--color-clay-500)'
+              }`}
+            >
+              {position ? <LocateFixed size={13} /> : <LocateOff size={13} />}
+              {position ? 'Position partagee' : 'Position inconnue'}
+            </span>
             <CarteNoteMoyenne infirmierId={user.userId} />
             <span
               className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full ${
@@ -219,6 +259,12 @@ export default function InfirmierAlertesPage() {
           </div>
         }
       />
+
+      {erreurGps && (
+        <div className="flex items-center gap-2 bg-(--color-amber-400)/20 text-(--color-amber-500) text-sm font-medium rounded-xl px-4 py-3">
+          <LocateOff size={16} /> {erreurGps} Sans position, vous ne recevez que les alertes diffusees a toutes les infirmieres.
+        </div>
+      )}
 
       {confirmation && (
         <div className="flex items-center gap-2 bg-(--color-sage-100) text-(--color-sage-500) text-sm font-medium rounded-xl px-4 py-3">
@@ -256,12 +302,23 @@ export default function InfirmierAlertesPage() {
                     <div className="mt-3 space-y-1.5 text-sm text-(--color-ink-600)">
                       <p className="flex items-start gap-1.5"><MapPin size={14} className="mt-0.5 shrink-0" /> {a.adresse}</p>
                       {a.patientTelephone && (
-                        <p className="flex items-center gap-1.5"><Phone size={14} /> {a.patientTelephone}</p>
+                        <a href={`tel:${a.patientTelephone}`} className="flex items-center gap-1.5 hover:underline"><Phone size={14} /> {a.patientTelephone}</a>
                       )}
                       {a.message && (
                         <p className="flex items-start gap-1.5"><MessageSquare size={14} className="mt-0.5 shrink-0" /> {a.message}</p>
                       )}
                     </div>
+
+                    {lienItineraire(a) && (
+                      <a href={lienItineraire(a)} target="_blank" rel="noreferrer" className="block mt-4">
+                        <Button variant="primary" className="w-full">
+                          <Navigation size={15} /> Itineraire vers le patient
+                        </Button>
+                      </a>
+                    )}
+                    <p className="mt-2 text-xs text-(--color-ink-600)">
+                      Le patient suit votre position en temps reel tant que cette page reste ouverte.
+                    </p>
 
                     <div className="mt-4 pt-4 border-t border-(--color-petrol-100) space-y-2">
                       <label className="text-sm font-semibold text-(--color-ink-900)">
@@ -342,6 +399,11 @@ export default function InfirmierAlertesPage() {
                         </p>
                         <p className="flex items-center gap-1 text-xs text-(--color-ink-300) mt-0.5">
                           <Clock size={12} /> {tempsEcoule(a.dateCreation)}
+                          {a.distanceKm != null && (
+                            <span className="ml-1.5 inline-flex items-center gap-1 font-semibold text-(--color-petrol-600)">
+                              <Navigation size={12} /> {formatDistance(a.distanceKm)}
+                            </span>
+                          )}
                         </p>
                       </div>
                       <span className="text-xs font-semibold px-2 py-1 rounded-full bg-(--color-amber-400)/20 text-(--color-amber-500)">

@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { BellRing, MapPin, MessageSquare, Send, X, Clock, UserCheck, History, Star, RefreshCw, ClipboardCheck } from 'lucide-react';
-import { creerAlerte, annulerAlerte, noterAlerte, getMesAlertes } from '../../api/alertes';
+import { BellRing, MapPin, MessageSquare, Send, X, Clock, UserCheck, History, Star, RefreshCw, ClipboardCheck, Phone, Navigation, LocateOff } from 'lucide-react';
+import { creerAlerte, annulerAlerte, noterAlerte, getMesAlertes, getSuiviInfirmier } from '../../api/alertes';
+import { lirePositionActuelle } from '../../hooks/usePositionGps';
+import CarteSuivi from '../../components/CarteSuivi';
 import { getToken } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import { useAlerteSocket } from '../../hooks/useAlerteSocket';
@@ -52,6 +54,10 @@ export default function PatientAlertesPage() {
   const [infoRetractation, setInfoRetractation] = useState(false);
   const [notation, setNotation] = useState({ note: 0, commentaire: '' });
   const [envoiNotation, setEnvoiNotation] = useState(false);
+  const [localisation, setLocalisation] = useState(false);
+  const [sansPosition, setSansPosition] = useState(false);
+  // Position en temps reel de l'infirmiere en route (statut REPONDUE uniquement).
+  const [suivi, setSuivi] = useState(null);
   const token = useMemo(() => getToken(), []);
 
   const chargerHistorique = useCallback(async () => {
@@ -80,20 +86,44 @@ export default function PatientAlertesPage() {
     setHistorique((prev) => prev.map((a) => (a.id === alerte.id ? alerte : a)));
   }, []);
 
+  const onSuivi = useCallback((position) => {
+    setSuivi((prev) => (prev && prev.alerteId !== position.alerteId ? prev : position));
+  }, []);
+
   const subscriptions = useMemo(
-    () => [{ destination: '/user/queue/alertes', onMessage: onAlerteMiseAJour }],
-    [onAlerteMiseAJour]
+    () => [
+      { destination: '/user/queue/alertes', onMessage: onAlerteMiseAJour },
+      { destination: '/user/queue/suivi', onMessage: onSuivi },
+    ],
+    [onAlerteMiseAJour, onSuivi]
   );
   useAlerteSocket(token, subscriptions);
+
+  // Des qu'une infirmiere a accepte : derniere position connue, puis mises a jour via WebSocket.
+  const alerteSuivieId = alerteEnCours?.statut === 'REPONDUE' ? alerteEnCours.id : null;
+  useEffect(() => {
+    if (!alerteSuivieId) return;
+    getSuiviInfirmier(alerteSuivieId).then(setSuivi).catch(() => {});
+  }, [alerteSuivieId]);
+  // Ignore une position residuelle d'une intervention precedente.
+  const suiviActif = alerteSuivieId && suivi?.alerteId === alerteSuivieId ? suivi : null;
 
   async function handleEnvoyer(e) {
     e.preventDefault();
     setErreur(null);
     setEnvoi(true);
+    // La position permet de prevenir d'abord les infirmieres les plus proches ; sans elle,
+    // l'alerte part quand meme, a toutes les infirmieres connectees.
+    setLocalisation(true);
+    const position = await lirePositionActuelle().catch(() => null);
+    setLocalisation(false);
+    setSansPosition(!position);
     try {
       const alerte = await creerAlerte(user.userId, {
         adresse: form.adresse,
         message: form.message || null,
+        latitude: position?.latitude ?? null,
+        longitude: position?.longitude ?? null,
       });
       setAlerteEnCours(alerte);
       setHistorique((prev) => [alerte, ...prev]);
@@ -140,12 +170,12 @@ export default function PatientAlertesPage() {
     <div className="space-y-8">
       <PageHeader
         title="Soins a domicile"
-        description="Envoyez une alerte : toutes les infirmieres connectees la recoivent instantanement."
+        description="Envoyez une alerte : les infirmieres disponibles les plus proches de vous sont prevenues instantanement."
       />
 
       {infoRetractation && (
         <div className="flex items-center gap-2 bg-(--color-amber-400)/20 text-(--color-amber-500) text-sm font-medium rounded-xl px-4 py-3">
-          <RefreshCw size={15} /> L'infirmiere s'est desistee suite a un imprevu. Votre alerte est de nouveau diffusee aux infirmieres connectees.
+          <RefreshCw size={15} /> L'infirmiere s'est desistee suite a un imprevu. Votre alerte est de nouveau proposee aux infirmieres.
         </div>
       )}
       {erreur && (
@@ -181,7 +211,11 @@ export default function PatientAlertesPage() {
                 {alerteEnCours.statut === 'SERVICE_RENDU' && 'Intervention terminee'}
               </p>
               <p className="text-sm text-(--color-ink-600)">
-                {alerteEnCours.statut === 'EN_ATTENTE' && "En attente qu'une infirmiere connectee reponde present..."}
+                {alerteEnCours.statut === 'EN_ATTENTE' && (
+                  alerteEnCours.diffusionGenerale
+                    ? "Proposee a toutes les infirmieres connectees. En attente d'une reponse..."
+                    : `Proposee aux ${alerteEnCours.nombreInfirmiersNotifies} infirmieres les plus proches de vous. Si aucune ne repond, la recherche s'elargit automatiquement.`
+                )}
                 {alerteEnCours.statut === 'REPONDUE' &&
                   `${alerteEnCours.infirmierPrenom} ${alerteEnCours.infirmierNom}, infirmier(e), a repondu present et arrive.`}
                 {alerteEnCours.statut === 'SERVICE_RENDU' &&
@@ -193,6 +227,49 @@ export default function PatientAlertesPage() {
           <div className="mt-4 flex items-start gap-1.5 text-sm text-(--color-ink-600)">
             <MapPin size={14} className="mt-0.5 shrink-0" /> {alerteEnCours.adresse}
           </div>
+
+          {alerteEnCours.statut === 'EN_ATTENTE' && sansPosition && (
+            <div className="mt-4 flex items-start gap-2 text-sm text-(--color-ink-600) bg-(--color-petrol-50) rounded-xl px-4 py-3">
+              <LocateOff size={15} className="mt-0.5 shrink-0" />
+              Votre position n'a pas pu etre lue : l'alerte a ete envoyee a toutes les infirmieres.
+              Autorisez la localisation la prochaine fois pour prevenir les plus proches en priorite.
+            </div>
+          )}
+
+          {alerteEnCours.statut === 'REPONDUE' && (
+            <div className="mt-5 space-y-3">
+              {alerteEnCours.infirmierTelephone && (
+                <a
+                  href={`tel:${alerteEnCours.infirmierTelephone}`}
+                  className="flex items-center justify-between gap-3 rounded-xl bg-(--color-petrol-600) text-white px-4 py-3 hover:bg-(--color-petrol-700) transition-colors"
+                >
+                  <span>
+                    <span className="block text-xs text-white/80">Appeler {alerteEnCours.infirmierPrenom}</span>
+                    <span className="font-semibold">{alerteEnCours.infirmierTelephone}</span>
+                  </span>
+                  <Phone size={20} />
+                </a>
+              )}
+              <div className="flex items-center justify-between text-sm">
+                <span className="flex items-center gap-1.5 font-semibold text-(--color-ink-900)">
+                  <Navigation size={15} className="text-(--color-amber-500)" /> Suivi en temps reel
+                </span>
+                {suiviActif?.distanceKm != null && (
+                  <span className="text-(--color-ink-600)">a {suiviActif.distanceKm.toLocaleString('fr-FR')} km de vous</span>
+                )}
+              </div>
+              {suiviActif?.latitude ? (
+                <CarteSuivi
+                  patient={alerteEnCours.latitude ? { latitude: alerteEnCours.latitude, longitude: alerteEnCours.longitude } : null}
+                  infirmiere={suiviActif}
+                />
+              ) : (
+                <p className="text-sm text-(--color-ink-600) bg-(--color-petrol-50) rounded-xl px-4 py-3">
+                  La position de l'infirmiere s'affichera ici des qu'elle sera partagee.
+                </p>
+              )}
+            </div>
+          )}
 
           {alerteEnCours.statut === 'EN_ATTENTE' && (
             <Button variant="danger" className="mt-5" onClick={handleAnnuler}>
@@ -255,7 +332,8 @@ export default function PatientAlertesPage() {
               />
             </div>
             <Button type="submit" variant="amber" disabled={envoi} className="w-full">
-              <Send size={15} /> {envoi ? 'Envoi en cours...' : "Envoyer l'alerte a toutes les infirmieres"}
+              <Send size={15} />
+              {localisation ? 'Localisation...' : envoi ? 'Envoi en cours...' : "Envoyer l'alerte aux infirmieres proches"}
             </Button>
           </form>
         </Card>

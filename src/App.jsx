@@ -26,16 +26,10 @@ import MedecinLayout from './layouts/MedecinLayout';
 import MedecinDashboardPage from './pages/medecin/MedecinDashboardPage';
 import MedecinAgendaPage from './pages/medecin/MedecinAgendaPage';
 import MedecinPatientsPage from './pages/medecin/MedecinPatientsPage';
+import MedecinCarnetPage from './pages/medecin/MedecinCarnetPage';
 import MedecinConsultationsPage from './pages/medecin/MedecinConsultationsPage';
 import MedecinProfilPage from './pages/medecin/MedecinProfilPage';
 import MedecinEtablissementPage from './pages/medecin/MedecinEtablissementPage';
-
-// Espace Secretaire
-import SecretaireLayout from './layouts/SecretaireLayout';
-import SecretaireDashboardPage from './pages/secretaire/SecretaireDashboardPage';
-import SecretaireAgendaPage from './pages/secretaire/SecretaireAgendaPage';
-import SecretairePatientsPage from './pages/secretaire/SecretairePatientsPage';
-import SecretaireEtablissementsPage from './pages/secretaire/SecretaireEtablissementsPage';
 
 // Espace Directeur
 import DirecteurLayout from './layouts/DirecteurLayout';
@@ -43,6 +37,11 @@ import DirecteurDashboardPage from './pages/directeur/DirecteurDashboardPage';
 import DirecteurEtablissementsPage from './pages/directeur/DirecteurEtablissementsPage';
 import DirecteurMedecinsPage from './pages/directeur/DirecteurMedecinsPage';
 import DirecteurPatientsPage from './pages/directeur/DirecteurPatientsPage';
+
+// Identification d'urgence par reconnaissance faciale (tous les utilisateurs connectes)
+import LayoutUtilisateur from './layouts/LayoutUtilisateur';
+import ScanUrgencePage from './pages/urgence/ScanUrgencePage';
+import CarnetUrgencePage from './pages/urgence/CarnetUrgencePage';
 
 // Espace Admin
 import AdminLayout from './layouts/AdminLayout';
@@ -71,6 +70,10 @@ export default function App() {
           <Route path="/etablissements" element={<EtablissementsPubliquesPage />} />
           <Route path="/etablissements/:id" element={<EtablissementDetailPage />} />
 
+          {/* Urgence : scan ouvert a tout utilisateur connecte, carnet complet reserve au personnel de sante */}
+          <Route path="/urgence" element={<ProtectedRoute><LayoutUtilisateur><ScanUrgencePage /></LayoutUtilisateur></ProtectedRoute>} />
+          <Route path="/urgence/carnet/:patientId" element={<ProtectedRoute allowedRoles={['MEDECIN', 'INFIRMIER']}><LayoutUtilisateur><CarnetUrgencePage /></LayoutUtilisateur></ProtectedRoute>} />
+
           {/* Espace Patient */}
           <Route path="/patient" element={<Espace role="PATIENT" Layout={PatientLayout}><DashboardPage /></Espace>} />
           <Route path="/patient/dossier" element={<Espace role="PATIENT" Layout={PatientLayout}><DossierMedicalPage /></Espace>} />
@@ -86,15 +89,10 @@ export default function App() {
           <Route path="/medecin" element={<Espace role="MEDECIN" Layout={MedecinLayout}><MedecinDashboardPage /></Espace>} />
           <Route path="/medecin/agenda" element={<Espace role="MEDECIN" Layout={MedecinLayout}><MedecinAgendaPage /></Espace>} />
           <Route path="/medecin/patients" element={<Espace role="MEDECIN" Layout={MedecinLayout}><MedecinPatientsPage /></Espace>} />
+          <Route path="/medecin/patients/:patientId" element={<Espace role="MEDECIN" Layout={MedecinLayout}><MedecinCarnetPage /></Espace>} />
           <Route path="/medecin/consultations" element={<Espace role="MEDECIN" Layout={MedecinLayout}><MedecinConsultationsPage /></Espace>} />
           <Route path="/medecin/etablissement" element={<Espace role="MEDECIN" Layout={MedecinLayout}><MedecinEtablissementPage /></Espace>} />
           <Route path="/medecin/profil" element={<Espace role="MEDECIN" Layout={MedecinLayout}><MedecinProfilPage /></Espace>} />
-
-          {/* Espace Secretaire */}
-          <Route path="/secretaire" element={<Espace role="SECRETAIRE" Layout={SecretaireLayout}><SecretaireDashboardPage /></Espace>} />
-          <Route path="/secretaire/agenda" element={<Espace role="SECRETAIRE" Layout={SecretaireLayout}><SecretaireAgendaPage /></Espace>} />
-          <Route path="/secretaire/patients" element={<Espace role="SECRETAIRE" Layout={SecretaireLayout}><SecretairePatientsPage /></Espace>} />
-          <Route path="/secretaire/etablissements" element={<Espace role="SECRETAIRE" Layout={SecretaireLayout}><SecretaireEtablissementsPage /></Espace>} />
 
           {/* Espace Directeur */}
           <Route path="/directeur" element={<Espace role="DIRECTEUR" Layout={DirecteurLayout}><DirecteurDashboardPage /></Espace>} />

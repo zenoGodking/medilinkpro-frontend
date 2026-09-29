@@ -100,7 +100,6 @@ const ROLE_LABELS = {
   MEDECIN: 'Medecin',
   ADMIN: 'Administrateur',
   DIRECTEUR: 'Directeur',
-  SECRETAIRE: 'Secretaire',
   INFIRMIER: 'Infirmier(e)',
 };
 

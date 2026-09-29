@@ -40,13 +40,13 @@ export function AuthProvider({ children }) {
     }
   }, [persistSession]);
 
-  const register = useCallback(async (payload) => {
+  const register = useCallback(async (payload, visage) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await authApi.register(payload);
+      const response = await authApi.register(payload, visage);
       // Patient et Admin recoivent un token et sont connectes immediatement.
-      // Medecin, Secretaire et Directeur passent par une validation admin :
+      // Medecin, Infirmier et Directeur passent par une validation admin :
       // aucun token n'est emis, on ne connecte donc pas l'utilisateur.
       if (response.token) {
         persistSession(response);
