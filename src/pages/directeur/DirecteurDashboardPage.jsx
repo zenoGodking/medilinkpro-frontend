@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Building2, Stethoscope, Users, BadgeCheck } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { getAllEtablissements } from '../../api/etablissements';
 import { getAllMedecins } from '../../api/medecins';
-import { getAllPatients } from '../../api/patients';
+import { getMesEtablissements, getMesPatientsEtablissement } from '../../api/directeur';
 import { Card, Spinner } from '../../components/ui';
 
 function StatCard({ icon: Icon, label, value, accent }) {
@@ -25,9 +24,12 @@ export default function DirecteurDashboardPage() {
 
   useEffect(() => {
     let cancelled = false;
-    Promise.all([getAllEtablissements(), getAllMedecins(), getAllPatients()])
-      .then(([etablissements, medecins, patients]) => {
+    // Chiffres limites aux etablissements dont le directeur est responsable.
+    Promise.all([getMesEtablissements(), getAllMedecins(), getMesPatientsEtablissement()])
+      .then(([etablissements, tousMedecins, patients]) => {
         if (cancelled) return;
+        const mesIds = new Set(etablissements.map((e) => e.id));
+        const medecins = tousMedecins.filter((m) => mesIds.has(m.etablissementId));
         setStats({
           etablissements: etablissements.length,
           medecins: medecins.length,

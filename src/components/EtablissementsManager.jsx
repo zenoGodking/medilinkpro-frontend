@@ -13,6 +13,7 @@ import {
 import { getAllMedecins } from '../api/medecins';
 import { inviterMedecin, getDemandesEtablissement } from '../api/integration';
 import { resolveMediaUrl } from '../api/client';
+import { getTousLesUtilisateurs, attribuerDirecteur } from '../api/admin';
 import {
   Card, Button, Spinner, EmptyState, PageHeader, FieldLabel, TextInput, Textarea, Select,
 } from './ui';
@@ -21,11 +22,14 @@ const INITIAL_FORM = { nom: '', type: '', adresse: '', telephone: '', ville: '',
 const INITIAL_CAMPAGNE_FORM = { titre: '', description: '', dateDebut: '', dateFin: '' };
 
 /**
- * Gestion CRUD complete des etablissements de sante, partagee entre les
- * espaces Directeur et Admin (memes droits de creation/edition/suppression).
+ * Gestion CRUD des etablissements de sante, partagee entre les espaces Directeur et Admin.
+ * Un directeur ne voit et ne gere que ses etablissements (chargerEtablissements) ;
+ * l'admin voit tout et attribue le directeur responsable de chaque etablissement (modeAdmin).
  * Inclut la gestion des photos affichees dans le carousel de la page d'accueil.
  */
-export default function EtablissementsManager({ description }) {
+export default function EtablissementsManager({ description, chargerEtablissements = getAllEtablissements, modeAdmin = false }) {
+  const [directeurs, setDirecteurs] = useState([]);
+  const [attributionErreur, setAttributionErreur] = useState({});
   const [etablissements, setEtablissements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -52,8 +56,9 @@ export default function EtablissementsManager({ description }) {
   async function load() {
     setLoading(true);
     try {
-      const data = await getAllEtablissements();
+      const data = await chargerEtablissements();
       setEtablissements(data);
+      if (modeAdmin) setDirecteurs(await getTousLesUtilisateurs('DIRECTEUR'));
     } catch {
       setEtablissements([]);
     } finally {
@@ -65,6 +70,16 @@ export default function EtablissementsManager({ description }) {
 
   function update(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  async function handleAttribuerDirecteur(etablissementId, directeurId) {
+    setAttributionErreur((prev) => ({ ...prev, [etablissementId]: null }));
+    try {
+      const maj = await attribuerDirecteur(etablissementId, directeurId || null);
+      setEtablissements((prev) => prev.map((e) => (e.id === etablissementId ? maj : e)));
+    } catch (err) {
+      setAttributionErreur((prev) => ({ ...prev, [etablissementId]: err.response?.data?.message || "Attribution impossible." }));
+    }
   }
 
   function startCreate() {
@@ -371,6 +386,18 @@ export default function EtablissementsManager({ description }) {
                   <div>
                     <p className="font-display font-semibold text-(--color-ink-900)">{e.nom}</p>
                     {e.type && <p className="text-sm text-(--color-amber-500) font-medium">{e.type}</p>}
+                    {modeAdmin && (
+                      <div className="mt-2">
+                        <label className="text-xs text-(--color-ink-600)">Directeur responsable</label>
+                        <Select value={e.directeurId || ''} onChange={(ev) => handleAttribuerDirecteur(e.id, ev.target.value)}>
+                          <option value="">Aucun directeur</option>
+                          {directeurs.map((d) => (
+                            <option key={d.id} value={d.id}>{d.prenom} {d.nom}</option>
+                          ))}
+                        </Select>
+                        {attributionErreur[e.id] && <p className="text-xs text-(--color-clay-500) mt-1">{attributionErreur[e.id]}</p>}
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
                     <button onClick={() => startEdit(e)} className="p-2 rounded-lg hover:bg-(--color-petrol-50) text-(--color-petrol-600)">

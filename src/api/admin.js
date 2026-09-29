@@ -34,3 +34,9 @@ export async function toggleActif(id) {
   const { data } = await api.patch(`/api/admin/comptes/${id}/toggle-actif`);
   return data;
 }
+
+// Admin : attribuer (ou retirer avec null) le directeur responsable d'un etablissement.
+export async function attribuerDirecteur(etablissementId, directeurId) {
+  const { data } = await api.patch(`/api/admin/etablissements/${etablissementId}/directeur`, { directeurId });
+  return data;
+}
