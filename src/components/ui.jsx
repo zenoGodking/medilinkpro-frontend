@@ -101,6 +101,7 @@ const ROLE_LABELS = {
   ADMIN: 'Administrateur',
   DIRECTEUR: 'Directeur',
   INFIRMIER: 'Infirmier(e)',
+  PHARMACIEN: 'Pharmacien(ne)',
 };
 
 export function RoleBadge({ role }) {

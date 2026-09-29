@@ -4,6 +4,7 @@ import MedecinLayout from './MedecinLayout';
 import InfirmierLayout from './InfirmierLayout';
 import DirecteurLayout from './DirecteurLayout';
 import AdminLayout from './AdminLayout';
+import PharmacienLayout from './PharmacienLayout';
 
 const LAYOUT_BY_ROLE = {
   PATIENT: PatientLayout,
@@ -11,6 +12,7 @@ const LAYOUT_BY_ROLE = {
   INFIRMIER: InfirmierLayout,
   DIRECTEUR: DirecteurLayout,
   ADMIN: AdminLayout,
+  PHARMACIEN: PharmacienLayout,
 };
 
 /** Layout de l'espace de l'utilisateur connecte, pour les pages communes a tous les roles (ex: urgence). */

@@ -6,6 +6,7 @@ import { Card, Spinner, EmptyState } from '../../components/ui';
 import InfosUrgenceCard from '../../components/InfosUrgenceCard';
 import AutorisationsMedecinsCard from '../../components/AutorisationsMedecinsCard';
 import JournalAccesCard from '../../components/JournalAccesCard';
+import OrdonnancesPatientCard from '../../components/pharmacie/OrdonnancesPatientCard';
 
 function formatDate(iso) {
   if (!iso) return '—';
@@ -67,6 +68,7 @@ export default function DossierMedicalPage() {
         Dossier chiffre et confidentiel
       </div>
 
+      <OrdonnancesPatientCard patientId={user.userId} />
       <InfosUrgenceCard patientId={user.userId} />
       <AutorisationsMedecinsCard />
       <JournalAccesCard />

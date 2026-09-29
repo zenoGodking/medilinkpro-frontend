@@ -9,6 +9,7 @@ export const HOME_BY_ROLE = {
   DIRECTEUR: '/directeur',
   ADMIN: '/admin',
   INFIRMIER: '/infirmier',
+  PHARMACIEN: '/pharmacien',
 };
 
 export function homeForRole(role) {

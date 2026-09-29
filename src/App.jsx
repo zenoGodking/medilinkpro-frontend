@@ -46,6 +46,12 @@ import CarteScanneePage from './pages/urgence/CarteScanneePage';
 import MaCarteUrgencePage from './pages/patient/MaCarteUrgencePage';
 import MonSuiviPage from './pages/patient/MonSuiviPage';
 
+// Espace Pharmacie
+import PharmacienLayout from './layouts/PharmacienLayout';
+import PharmacienScanPage from './pages/pharmacien/PharmacienScanPage';
+import OrdonnanceVerifieePage from './pages/pharmacien/OrdonnanceVerifieePage';
+import HistoriqueDelivrancesPage from './pages/pharmacien/HistoriqueDelivrancesPage';
+
 // Espace Admin
 import AdminLayout from './layouts/AdminLayout';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
@@ -90,6 +96,11 @@ export default function App() {
 
           {/* Espace Infirmier */}
           <Route path="/infirmier" element={<Espace role="INFIRMIER" Layout={InfirmierLayout}><InfirmierAlertesPage /></Espace>} />
+
+          {/* Espace Pharmacie */}
+          <Route path="/pharmacien" element={<Espace role="PHARMACIEN" Layout={PharmacienLayout}><PharmacienScanPage /></Espace>} />
+          <Route path="/pharmacien/historique" element={<Espace role="PHARMACIEN" Layout={PharmacienLayout}><HistoriqueDelivrancesPage /></Espace>} />
+          <Route path="/pharmacie/ordonnance/:jeton" element={<Espace role="PHARMACIEN" Layout={PharmacienLayout}><OrdonnanceVerifieePage /></Espace>} />
 
           {/* Espace Medecin */}
           <Route path="/medecin" element={<Espace role="MEDECIN" Layout={MedecinLayout}><MedecinDashboardPage /></Espace>} />

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  Stethoscope, AlertCircle, ArrowLeft, CheckCircle2, User, Building2, HeartPulse,
+  Stethoscope, AlertCircle, ArrowLeft, CheckCircle2, User, Building2, HeartPulse, Pill,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Button, TextInput, FieldLabel, Select } from '../components/ui';
@@ -28,13 +28,14 @@ const ROLES = [
   { value: 'PATIENT', label: 'Patient', description: 'Suivre mon dossier medical et prendre rendez-vous', icon: User },
   { value: 'MEDECIN', label: 'Medecin', description: 'Proposer des consultations et gerer mon agenda', icon: Stethoscope },
   { value: 'INFIRMIER', label: 'Infirmier(e)', description: 'Repondre aux alertes de soins a domicile', icon: HeartPulse },
+  { value: 'PHARMACIEN', label: 'Pharmacien(ne)', description: 'Verifier et delivrer les ordonnances', icon: Pill },
   { value: 'DIRECTEUR', label: 'Directeur', description: "Superviser un etablissement de sante", icon: Building2 },
 ];
 
 const INITIAL_FORM = {
   nom: '', prenom: '', email: '', motDePasse: '', telephone: '',
   dateNaissance: '', groupeSanguin: '', allergies: '', conditionsUrgence: '', contactUrgenceNom: '', contactUrgenceTelephone: '',
-  specialite: '', numeroOrdre: '', tarif: '', ville: '', quartier: '',
+  specialite: '', numeroOrdre: '', tarif: '', ville: '', quartier: '', nomPharmacie: '', numeroAgrement: '',
 };
 
 export default function RegisterPage() {
@@ -73,6 +74,11 @@ export default function RegisterPage() {
           conditionsUrgence: form.conditionsUrgence || null,
           contactUrgenceNom: form.contactUrgenceNom || null,
           contactUrgenceTelephone: form.contactUrgenceTelephone || null,
+        }),
+        ...(role === 'PHARMACIEN' && {
+          nomPharmacie: form.nomPharmacie || null,
+          numeroAgrement: form.numeroAgrement || null,
+          ville: form.ville || null,
         }),
         ...(role === 'MEDECIN' && {
           specialite: form.specialite || null,
@@ -271,6 +277,26 @@ export default function RegisterPage() {
                       value={form.contactUrgenceTelephone}
                       onChange={(e) => update('contactUrgenceTelephone', e.target.value)}
                     />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {role === 'PHARMACIEN' && (
+              <>
+                <div>
+                  <FieldLabel>Nom de la pharmacie</FieldLabel>
+                  <TextInput required placeholder="Pharmacie du Centre" value={form.nomPharmacie}
+                    onChange={(e) => update('nomPharmacie', e.target.value)} />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <FieldLabel>Numero d'agrement</FieldLabel>
+                    <TextInput required value={form.numeroAgrement} onChange={(e) => update('numeroAgrement', e.target.value)} />
+                  </div>
+                  <div>
+                    <FieldLabel>Ville</FieldLabel>
+                    <TextInput placeholder="Yaounde" value={form.ville} onChange={(e) => update('ville', e.target.value)} />
                   </div>
                 </div>
               </>
