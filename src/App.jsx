@@ -42,6 +42,8 @@ import DirecteurPatientsPage from './pages/directeur/DirecteurPatientsPage';
 import LayoutUtilisateur from './layouts/LayoutUtilisateur';
 import ScanUrgencePage from './pages/urgence/ScanUrgencePage';
 import CarnetUrgencePage from './pages/urgence/CarnetUrgencePage';
+import CarteScanneePage from './pages/urgence/CarteScanneePage';
+import MaCarteUrgencePage from './pages/patient/MaCarteUrgencePage';
 
 // Espace Admin
 import AdminLayout from './layouts/AdminLayout';
@@ -72,11 +74,13 @@ export default function App() {
 
           {/* Urgence : scan ouvert a tout utilisateur connecte, carnet complet reserve au personnel de sante */}
           <Route path="/urgence" element={<ProtectedRoute><LayoutUtilisateur><ScanUrgencePage /></LayoutUtilisateur></ProtectedRoute>} />
+          <Route path="/urgence/carte/:jeton" element={<ProtectedRoute><LayoutUtilisateur><CarteScanneePage /></LayoutUtilisateur></ProtectedRoute>} />
           <Route path="/urgence/carnet/:patientId" element={<ProtectedRoute allowedRoles={['MEDECIN', 'INFIRMIER']}><LayoutUtilisateur><CarnetUrgencePage /></LayoutUtilisateur></ProtectedRoute>} />
 
           {/* Espace Patient */}
           <Route path="/patient" element={<Espace role="PATIENT" Layout={PatientLayout}><DashboardPage /></Espace>} />
           <Route path="/patient/dossier" element={<Espace role="PATIENT" Layout={PatientLayout}><DossierMedicalPage /></Espace>} />
+          <Route path="/patient/carte-urgence" element={<Espace role="PATIENT" Layout={PatientLayout}><MaCarteUrgencePage /></Espace>} />
           <Route path="/patient/recherche" element={<Espace role="PATIENT" Layout={PatientLayout}><RechercheMedecinsPage /></Espace>} />
           <Route path="/patient/rendez-vous" element={<Espace role="PATIENT" Layout={PatientLayout}><RendezVousListPage /></Espace>} />
           <Route path="/patient/rendez-vous/nouveau/:medecinId" element={<Espace role="PATIENT" Layout={PatientLayout}><NouveauRendezVousPage /></Espace>} />

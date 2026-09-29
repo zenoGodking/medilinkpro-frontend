@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Stethoscope, AlertCircle, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Button, TextInput, FieldLabel } from '../components/ui';
@@ -8,13 +8,17 @@ import { homeForRole } from '../utils/roles';
 export default function LoginPage() {
   const { login, loading, error } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  // Page a retrouver apres connexion ; uniquement un chemin interne (pas de redirection vers un autre site).
+  const from = location.state?.from;
+  const retour = typeof from === 'string' && from.startsWith('/') && !from.startsWith('//') ? from : null;
   const [form, setForm] = useState({ email: '', motDePasse: '' });
 
   async function handleSubmit(e) {
     e.preventDefault();
     try {
       const response = await login(form);
-      navigate(homeForRole(response.role));
+      navigate(retour || homeForRole(response.role), { replace: true });
     } catch {
       // l'erreur est deja geree et affichee via le contexte
     }

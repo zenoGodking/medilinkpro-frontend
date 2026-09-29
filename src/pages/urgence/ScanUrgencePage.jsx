@@ -172,6 +172,11 @@ export default function ScanUrgencePage() {
         </span>
       </div>
 
+      <p className="text-sm text-(--color-ink-600)">
+        La personne a une <strong>carte d'urgence</strong> (QR code sur son ecran verrouille ou dans son portefeuille) ?
+        Scannez-la simplement avec l'appareil photo de votre telephone : c'est plus fiable que la reconnaissance faciale.
+      </p>
+
       <Card className="p-5 space-y-4">
         <CapturePhotoVisage
           onResultat={handleVisage}
