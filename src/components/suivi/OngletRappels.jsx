@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Pill, Plus, Trash2, X, BellOff, Bell } from 'lucide-react';
 import { getRappels, ajouterRappel, basculerRappel, supprimerRappel } from '../../api/suivi';
 import { Button, FieldLabel, TextInput, Spinner } from '../ui';
+import NotificationsPushCard from '../NotificationsPushCard';
 
 /** Rappels de medicaments : geres par le patient, consultables par les medecins. */
 export default function OngletRappels({ patientId, estPatient }) {
@@ -64,6 +65,8 @@ export default function OngletRappels({ patientId, estPatient }) {
         </ul>
       )}
 
+      {estPatient && <NotificationsPushCard raison="Recevez une notification a chaque heure de prise, meme application fermee." />}
+
       {estPatient && (
         <form onSubmit={enregistrer} className="rounded-xl bg-(--color-petrol-50) p-4 space-y-3">
           <div className="grid sm:grid-cols-2 gap-3">
@@ -99,9 +102,7 @@ export default function OngletRappels({ patientId, estPatient }) {
           </div>
           {erreur && <p className="text-sm text-(--color-clay-500)">{erreur}</p>}
           <Button type="submit"><Plus size={15} /> Ajouter le traitement</Button>
-          <p className="text-xs text-(--color-ink-600)">
-            Les notifications de rappel sur votre telephone arriveront avec l'application installable.
-          </p>
+
         </form>
       )}
     </div>

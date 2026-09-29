@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { LogOut, Stethoscope, ScanFace } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import InstallerApp from '../components/InstallerApp';
 
 /**
  * Layout partage par tous les espaces authentifies (Patient, Medecin, Infirmier,
@@ -56,6 +57,7 @@ export default function RoleLayout({ navItems, roleLabel, children }) {
           </nav>
 
           <div className="flex items-center gap-3">
+            <InstallerApp />
             {/* Identification d'urgence : accessible depuis tous les espaces */}
             <NavLink
               to="/urgence"

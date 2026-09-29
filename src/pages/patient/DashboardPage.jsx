@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { getRendezVousByPatient } from '../../api/rendezVous';
 import { Card, Button, Spinner, EmptyState } from '../../components/ui';
 import PhotoFacialeCard from '../../components/PhotoFacialeCard';
+import NotificationsPushCard from '../../components/NotificationsPushCard';
 
 function formatDateHeure(iso) {
   const d = new Date(iso);
@@ -51,6 +52,7 @@ export default function DashboardPage() {
       </div>
 
       <PhotoFacialeCard />
+      <NotificationsPushCard raison="Soyez prevenu quand une infirmiere arrive et a l'heure de vos medicaments." />
 
       {/* Signature : carte "prochain rendez-vous" en evidence */}
       {loading ? (

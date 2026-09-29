@@ -8,6 +8,7 @@ import { getToken } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import { useAlerteSocket } from '../../hooks/useAlerteSocket';
 import { usePositionGps } from '../../hooks/usePositionGps';
+import NotificationsPushCard from '../../components/NotificationsPushCard';
 import { Card, Button, Textarea, Spinner, EmptyState, PageHeader } from '../../components/ui';
 
 /** Petit bip synthetise (Web Audio API) pour signaler une nouvelle alerte sans fichier son externe. */
@@ -259,6 +260,8 @@ export default function InfirmierAlertesPage() {
           </div>
         }
       />
+
+      <NotificationsPushCard raison="Recevez les demandes de soins proches de vous meme ecran eteint ou application fermee." />
 
       {erreurGps && (
         <div className="flex items-center gap-2 bg-(--color-amber-400)/20 text-(--color-amber-500) text-sm font-medium rounded-xl px-4 py-3">
