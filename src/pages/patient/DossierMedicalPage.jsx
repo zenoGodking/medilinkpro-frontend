@@ -5,6 +5,7 @@ import { getDossierMedicalByPatient } from '../../api/patients';
 import { Card, Spinner, EmptyState } from '../../components/ui';
 import InfosUrgenceCard from '../../components/InfosUrgenceCard';
 import AutorisationsMedecinsCard from '../../components/AutorisationsMedecinsCard';
+import JournalAccesCard from '../../components/JournalAccesCard';
 
 function formatDate(iso) {
   if (!iso) return '—';
@@ -68,6 +69,7 @@ export default function DossierMedicalPage() {
 
       <InfosUrgenceCard patientId={user.userId} />
       <AutorisationsMedecinsCard />
+      <JournalAccesCard />
 
       {/* Consultations */}
       <section>

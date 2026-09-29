@@ -26,3 +26,9 @@ export async function autoriserMedecin(medecinId) {
 export async function revoquerMedecin(medecinId) {
   await api.delete(`/api/carnets/autorisations/${medecinId}`);
 }
+
+// Patient : qui a consulte ou modifie son carnet.
+export async function getJournalAcces() {
+  const { data } = await api.get('/api/carnets/journal');
+  return data;
+}
