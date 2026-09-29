@@ -5,6 +5,7 @@ import { getCarnet } from '../../api/carnets';
 import { declarerDeces } from '../../api/patients';
 import { Card, Button, Spinner, PageHeader, EmptyState, FieldLabel, TextInput, Textarea } from '../../components/ui';
 import CarnetSections from '../../components/CarnetSections';
+import SuiviSante from '../../components/suivi/SuiviSante';
 
 const MESSAGES_NOTIFICATION = {
   ENVOYE: 'Le proche a ete informe par SMS.',
@@ -149,6 +150,11 @@ export default function MedecinCarnetPage() {
       )}
 
       <CarnetSections carnet={carnet} />
+
+      <div>
+        <h2 className="font-display font-semibold text-lg text-(--color-ink-900) mb-3">Suivi (mesures, traitements, vaccins, grossesse)</h2>
+        <SuiviSante patientId={p.id} peutEcrire={carnet.ecritureAutorisee} />
+      </div>
 
       {!p.decede && (
         <DeclarationDeces

@@ -44,6 +44,7 @@ import ScanUrgencePage from './pages/urgence/ScanUrgencePage';
 import CarnetUrgencePage from './pages/urgence/CarnetUrgencePage';
 import CarteScanneePage from './pages/urgence/CarteScanneePage';
 import MaCarteUrgencePage from './pages/patient/MaCarteUrgencePage';
+import MonSuiviPage from './pages/patient/MonSuiviPage';
 
 // Espace Admin
 import AdminLayout from './layouts/AdminLayout';
@@ -80,6 +81,7 @@ export default function App() {
           {/* Espace Patient */}
           <Route path="/patient" element={<Espace role="PATIENT" Layout={PatientLayout}><DashboardPage /></Espace>} />
           <Route path="/patient/dossier" element={<Espace role="PATIENT" Layout={PatientLayout}><DossierMedicalPage /></Espace>} />
+          <Route path="/patient/suivi" element={<Espace role="PATIENT" Layout={PatientLayout}><MonSuiviPage /></Espace>} />
           <Route path="/patient/carte-urgence" element={<Espace role="PATIENT" Layout={PatientLayout}><MaCarteUrgencePage /></Espace>} />
           <Route path="/patient/recherche" element={<Espace role="PATIENT" Layout={PatientLayout}><RechercheMedecinsPage /></Espace>} />
           <Route path="/patient/rendez-vous" element={<Espace role="PATIENT" Layout={PatientLayout}><RendezVousListPage /></Espace>} />
