@@ -36,10 +36,10 @@ export default function EtablissementsShowcase() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="max-w-xl">
           <h2 className="font-display font-bold text-2xl sm:text-3xl text-(--color-petrol-700)">
-            Nos etablissements partenaires.
+            Nos établissements partenaires.
           </h2>
           <p className="text-(--color-ink-600) mt-3">
-            Decouvrez les hopitaux et cliniques deja presents sur MediLinkPro, en images.
+            Découvrez les hôpitaux et cliniques déjà présents sur MediLinkPro, en images.
           </p>
         </div>
         <Link

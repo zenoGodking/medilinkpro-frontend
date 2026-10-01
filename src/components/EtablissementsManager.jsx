@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   Building2, MapPin, Phone, Plus, X, Pencil, Trash2, ImagePlus, ImageOff,
-  Megaphone, ChevronDown, ChevronUp, Ban, Stethoscope, Send,
+  Megaphone, ChevronDown, ChevronUp, Ban, Stethoscope, Send, Check,
 } from 'lucide-react';
 import {
   getAllEtablissements, createEtablissement, updateEtablissement, deleteEtablissement,
@@ -11,14 +11,17 @@ import {
   creerCampagne, getCampagnesEtablissement, desactiverCampagne, supprimerCampagne,
 } from '../api/campagnes';
 import { getAllMedecins } from '../api/medecins';
-import { inviterMedecin, getDemandesEtablissement } from '../api/integration';
+import { inviterMedecin, getDemandesEtablissement, repondreDemandeIntegration } from '../api/integration';
+import { getInfirmiersEtablissement } from '../api/infirmiers';
+import { useAuth } from '../context/AuthContext';
+import SelecteurPosition from './SelecteurPosition';
 import { resolveMediaUrl } from '../api/client';
 import { getTousLesUtilisateurs, attribuerDirecteur } from '../api/admin';
 import {
   Card, Button, Spinner, EmptyState, PageHeader, FieldLabel, TextInput, Textarea, Select,
 } from './ui';
 
-const INITIAL_FORM = { nom: '', type: '', adresse: '', telephone: '', ville: '', quartier: '', specialitesDisponibles: '' };
+const INITIAL_FORM = { nom: '', type: '', adresse: '', telephone: '', ville: '', quartier: '', specialitesDisponibles: '', latitude: null, longitude: null };
 const INITIAL_CAMPAGNE_FORM = { titre: '', description: '', dateDebut: '', dateFin: '' };
 
 /**
@@ -52,9 +55,11 @@ export default function EtablissementsManager({ description, chargerEtablissemen
   const [medecinChoisi, setMedecinChoisi] = useState({});
   const [inviteSubmitting, setInviteSubmitting] = useState(null);
   const [inviteErreur, setInviteErreur] = useState({});
+  const [reponseEnCours, setReponseEnCours] = useState(null);
+  const [infirmiersParEtab, setInfirmiersParEtab] = useState({});
+  const { user } = useAuth();
 
   async function load() {
-    setLoading(true);
     try {
       const data = await chargerEtablissements();
       setEtablissements(data);
@@ -66,6 +71,8 @@ export default function EtablissementsManager({ description, chargerEtablissemen
     }
   }
 
+  // Chargement initial uniquement ; les rechargements suivent les actions de l'utilisateur.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { load(); }, []);
 
   function update(field, value) {
@@ -98,6 +105,8 @@ export default function EtablissementsManager({ description, chargerEtablissemen
       ville: e.ville || '',
       quartier: e.quartier || '',
       specialitesDisponibles: (e.specialitesDisponibles || []).join(', '),
+      latitude: e.latitude ?? null,
+      longitude: e.longitude ?? null,
     });
     setShowForm(true);
   }
@@ -116,6 +125,8 @@ export default function EtablissementsManager({ description, chargerEtablissemen
         specialitesDisponibles: form.specialitesDisponibles
           ? form.specialitesDisponibles.split(',').map((s) => s.trim()).filter(Boolean)
           : [],
+        latitude: form.latitude,
+        longitude: form.longitude,
       };
       if (editingId) {
         await updateEtablissement(editingId, payload);
@@ -148,7 +159,7 @@ export default function EtablissementsManager({ description, chargerEtablissemen
       const updated = await uploadEtablissementPhotos(id, fileList);
       setEtablissements((prev) => prev.map((e) => (e.id === id ? updated : e)));
     } catch {
-      setPhotoError((prev) => ({ ...prev, [id]: "Echec de l'envoi des photos. Verifiez le format (jpg, png, webp) et la taille (5 Mo max)." }));
+      setPhotoError((prev) => ({ ...prev, [id]: "Échec de l'envoi des photos. Vérifiez le format (jpg, png, webp) et la taille (5 Mo max)." }));
     } finally {
       setUploadingId(null);
       if (fileInputRefs.current[id]) fileInputRefs.current[id].value = '';
@@ -200,7 +211,7 @@ export default function EtablissementsManager({ description, chargerEtablissemen
       setCampagnesParEtab((prev) => ({ ...prev, [id]: [nouvelle, ...(prev[id] || [])] }));
       setCampagneForm((prev) => ({ ...prev, [id]: INITIAL_CAMPAGNE_FORM }));
     } catch {
-      setCampagneErreur((prev) => ({ ...prev, [id]: 'Impossible de creer la campagne. Verifiez les champs.' }));
+      setCampagneErreur((prev) => ({ ...prev, [id]: 'Impossible de créer la campagne. Vérifiez les champs.' }));
     } finally {
       setCampagneSubmitting(null);
     }
@@ -231,8 +242,9 @@ export default function EtablissementsManager({ description, chargerEtablissemen
           const data = await getAllMedecins();
           setTousLesMedecins(data);
         }
-        const demandes = await getDemandesEtablissement(id);
+        const [demandes, infirmiers] = await Promise.all([getDemandesEtablissement(id), getInfirmiersEtablissement(id)]);
         setDemandesParEtab((prev) => ({ ...prev, [id]: demandes }));
+        setInfirmiersParEtab((prev) => ({ ...prev, [id]: infirmiers }));
       } catch {
         setDemandesParEtab((prev) => ({ ...prev, [id]: [] }));
       }
@@ -249,9 +261,30 @@ export default function EtablissementsManager({ description, chargerEtablissemen
       setDemandesParEtab((prev) => ({ ...prev, [etabId]: [nouvelle, ...(prev[etabId] || [])] }));
       setMedecinChoisi((prev) => ({ ...prev, [etabId]: '' }));
     } catch {
-      setInviteErreur((prev) => ({ ...prev, [etabId]: 'Impossible d\'envoyer cette invitation (deja envoyee ou medecin deja membre).' }));
+      setInviteErreur((prev) => ({ ...prev, [etabId]: 'Impossible d\'envoyer cette invitation (déjà envoyée ou médecin déjà membre).' }));
     } finally {
       setInviteSubmitting(null);
+    }
+  }
+
+  async function handleRepondreDemande(etabId, demande, accepter) {
+    setReponseEnCours(demande.id);
+    setInviteErreur((prev) => ({ ...prev, [etabId]: null }));
+    try {
+      const maj = await repondreDemandeIntegration(demande.id, user.userId, { accepter });
+      setDemandesParEtab((prev) => ({
+        ...prev,
+        [etabId]: (prev[etabId] || []).map((d) => (d.id === maj.id ? maj : d)),
+      }));
+      if (accepter) {
+        setTousLesMedecins(await getAllMedecins());
+        const infirmiers = await getInfirmiersEtablissement(etabId);
+        setInfirmiersParEtab((prev) => ({ ...prev, [etabId]: infirmiers }));
+      }
+    } catch {
+      setInviteErreur((prev) => ({ ...prev, [etabId]: 'Impossible de répondre à cette demande.' }));
+    } finally {
+      setReponseEnCours(null);
     }
   }
 
@@ -266,12 +299,12 @@ export default function EtablissementsManager({ description, chargerEtablissemen
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Etablissements"
-        description={description || "Gerez les hopitaux et cliniques de votre reseau."}
+        title="Établissements"
+        description={description || "Gérez les hôpitaux et cliniques de votre réseau."}
         action={
           <Button variant="amber" onClick={showForm ? () => setShowForm(false) : startCreate}>
             {showForm ? <X size={16} /> : <Plus size={16} />}
-            {showForm ? 'Annuler' : 'Ajouter un etablissement'}
+            {showForm ? 'Annuler' : 'Ajouter un établissement'}
           </Button>
         }
       />
@@ -286,10 +319,10 @@ export default function EtablissementsManager({ description, chargerEtablissemen
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <FieldLabel>Type</FieldLabel>
-                <TextInput placeholder="Hopital, clinique..." value={form.type} onChange={(e) => update('type', e.target.value)} />
+                <TextInput placeholder="Hôpital, clinique..." value={form.type} onChange={(e) => update('type', e.target.value)} />
               </div>
               <div>
-                <FieldLabel>Telephone</FieldLabel>
+                <FieldLabel>Téléphone</FieldLabel>
                 <TextInput value={form.telephone} onChange={(e) => update('telephone', e.target.value)} />
               </div>
             </div>
@@ -300,7 +333,7 @@ export default function EtablissementsManager({ description, chargerEtablissemen
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <FieldLabel>Ville</FieldLabel>
-                <TextInput placeholder="Yaounde" value={form.ville} onChange={(e) => update('ville', e.target.value)} />
+                <TextInput placeholder="Yaoundé" value={form.ville} onChange={(e) => update('ville', e.target.value)} />
               </div>
               <div>
                 <FieldLabel>Quartier</FieldLabel>
@@ -308,20 +341,29 @@ export default function EtablissementsManager({ description, chargerEtablissemen
               </div>
             </div>
             <div>
-              <FieldLabel>Specialites disponibles</FieldLabel>
+              <FieldLabel>Spécialités disponibles</FieldLabel>
               <TextInput
-                placeholder="Cardiologie, pediatrie, dermatologie..."
+                placeholder="Cardiologie, pédiatrie, dermatologie..."
                 value={form.specialitesDisponibles}
                 onChange={(e) => update('specialitesDisponibles', e.target.value)}
               />
-              <p className="text-xs text-(--color-ink-300) mt-1">Separees par des virgules.</p>
+              <p className="text-xs text-(--color-ink-300) mt-1">Séparées par des virgules.</p>
+            </div>
+            <div>
+              <FieldLabel>Position sur la carte</FieldLabel>
+              <SelecteurPosition
+                latitude={form.latitude}
+                longitude={form.longitude}
+                onChange={({ latitude, longitude }) => setForm((prev) => ({ ...prev, latitude, longitude }))}
+              />
+              <p className="text-xs text-(--color-ink-300) mt-1">Permet aux patients de trouver l'établissement et d'y être guidés.</p>
             </div>
             <Button type="submit" disabled={submitting} className="w-full">
-              {submitting ? 'Enregistrement...' : editingId ? 'Mettre a jour' : "Creer l'etablissement"}
+              {submitting ? 'Enregistrement...' : editingId ? 'Mettre à jour' : "Créer l'établissement"}
             </Button>
             {!editingId && (
               <p className="text-xs text-(--color-ink-300) text-center">
-                Vous pourrez ajouter des photos juste apres la creation, depuis la fiche de l'etablissement.
+                Vous pourrez ajouter des photos juste après la création, depuis la fiche de l'établissement.
               </p>
             )}
           </form>
@@ -330,7 +372,7 @@ export default function EtablissementsManager({ description, chargerEtablissemen
 
       {etablissements.length === 0 ? (
         <Card>
-          <EmptyState icon={Building2} title="Aucun etablissement" description="Ajoutez votre premier etablissement de sante." />
+          <EmptyState icon={Building2} title="Aucun établissement" description="Ajoutez votre premier établissement de santé." />
         </Card>
       ) : (
         <div className="grid sm:grid-cols-2 gap-4">
@@ -449,7 +491,7 @@ export default function EtablissementsManager({ description, chargerEtablissemen
                           <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${
                             c.active ? 'bg-(--color-sage-100) text-(--color-sage-500)' : 'bg-(--color-petrol-100) text-(--color-ink-300)'
                           }`}>
-                            {c.active ? 'Active' : c.actif ? 'A venir/expiree' : 'Arretee'}
+                            {c.active ? 'Active' : c.actif ? 'À venir/expirée' : 'Arrêtée'}
                           </span>
                         </div>
                         <div className="flex items-center gap-3 mt-2">
@@ -459,7 +501,7 @@ export default function EtablissementsManager({ description, chargerEtablissemen
                               onClick={() => handleDesactiverCampagne(e.id, c.id)}
                               className="flex items-center gap-1 text-xs text-(--color-ink-300) hover:text-(--color-clay-500)"
                             >
-                              <Ban size={12} /> Arreter
+                              <Ban size={12} /> Arrêter
                             </button>
                           )}
                           <button
@@ -487,7 +529,7 @@ export default function EtablissementsManager({ description, chargerEtablissemen
                       />
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <FieldLabel>Debut</FieldLabel>
+                          <FieldLabel>Début</FieldLabel>
                           <TextInput
                             type="date"
                             value={campagneForm[e.id]?.dateDebut || ''}
@@ -523,7 +565,7 @@ export default function EtablissementsManager({ description, chargerEtablissemen
                   onClick={() => toggleMedecins(e.id)}
                   className="w-full flex items-center justify-between gap-2 text-sm font-semibold text-(--color-petrol-600) mt-3 pt-3 border-t border-(--color-petrol-100)"
                 >
-                  <span className="flex items-center gap-1.5"><Stethoscope size={15} /> Medecins de l'etablissement</span>
+                  <span className="flex items-center gap-1.5"><Stethoscope size={15} /> Médecins et infirmier(e)s</span>
                   {medecinsOuvert[e.id] ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
                 </button>
 
@@ -531,7 +573,7 @@ export default function EtablissementsManager({ description, chargerEtablissemen
                   <div className="mt-3 space-y-3">
                     <div className="flex flex-wrap gap-1.5">
                       {tousLesMedecins.filter((m) => m.etablissementId === e.id).length === 0 ? (
-                        <p className="text-xs text-(--color-ink-300)">Aucun medecin rattache pour l'instant.</p>
+                        <p className="text-xs text-(--color-ink-300)">Aucun médecin rattaché pour l'instant.</p>
                       ) : (
                         tousLesMedecins.filter((m) => m.etablissementId === e.id).map((m) => (
                           <span key={m.id} className="text-xs font-medium px-2.5 py-1 rounded-full bg-(--color-sage-100) text-(--color-sage-500)">
@@ -541,12 +583,47 @@ export default function EtablissementsManager({ description, chargerEtablissemen
                       )}
                     </div>
 
+                    {(infirmiersParEtab[e.id] || []).length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {infirmiersParEtab[e.id].map((i) => (
+                          <span key={i.id} className="text-xs font-medium px-2.5 py-1 rounded-full bg-(--color-petrol-50) text-(--color-petrol-600)">
+                            Inf. {i.prenom} {i.nom}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
                     {(demandesParEtab[e.id] || []).filter((d) => d.statut === 'EN_ATTENTE').length > 0 && (
                       <div className="space-y-1.5">
                         {(demandesParEtab[e.id] || []).filter((d) => d.statut === 'EN_ATTENTE').map((d) => (
-                          <p key={d.id} className="text-xs text-(--color-amber-500) bg-(--color-amber-400)/10 rounded-lg px-2.5 py-1.5">
-                            {d.initiateur === 'ETABLISSEMENT' ? 'Invitation envoyee a' : 'Demande recue de'} Dr {d.medecinPrenom} {d.medecinNom} - en attente
-                          </p>
+                          <div key={d.id} className="flex items-center justify-between gap-2 text-xs text-(--color-amber-500) bg-(--color-amber-400)/10 rounded-lg px-2.5 py-1.5">
+                            <span>
+                              {d.initiateur === 'ETABLISSEMENT' ? 'Invitation envoyée à' : 'Demande reçue de'}{' '}
+                              {d.typeProfessionnel === 'INFIRMIER' ? `l'infirmier(e) ${d.professionnelPrenom} ${d.professionnelNom}` : `Dr ${d.medecinPrenom} ${d.medecinNom}`} - en attente
+                            </span>
+                            {d.initiateur !== 'ETABLISSEMENT' && (
+                              <span className="flex gap-1 shrink-0">
+                                <button
+                                  type="button"
+                                  title="Accepter l'adhésion"
+                                  disabled={reponseEnCours === d.id}
+                                  onClick={() => handleRepondreDemande(e.id, d, true)}
+                                  className="p-1 rounded-md bg-(--color-sage-100) text-(--color-sage-500) hover:opacity-80 disabled:opacity-50"
+                                >
+                                  <Check size={13} />
+                                </button>
+                                <button
+                                  type="button"
+                                  title="Refuser"
+                                  disabled={reponseEnCours === d.id}
+                                  onClick={() => handleRepondreDemande(e.id, d, false)}
+                                  className="p-1 rounded-md bg-(--color-clay-100) text-(--color-clay-500) hover:opacity-80 disabled:opacity-50"
+                                >
+                                  <X size={13} />
+                                </button>
+                              </span>
+                            )}
+                          </div>
                         ))}
                       </div>
                     )}
@@ -557,9 +634,9 @@ export default function EtablissementsManager({ description, chargerEtablissemen
                           value={medecinChoisi[e.id] || ''}
                           onChange={(ev) => setMedecinChoisi((prev) => ({ ...prev, [e.id]: ev.target.value }))}
                         >
-                          <option value="">Choisir un medecin a inviter...</option>
+                          <option value="">Choisir un médecin à inviter...</option>
                           {tousLesMedecins.filter((m) => m.etablissementId !== e.id).map((m) => (
-                            <option key={m.id} value={m.id}>Dr {m.prenom} {m.nom} - {m.specialite || 'Generaliste'}</option>
+                            <option key={m.id} value={m.id}>Dr {m.prenom} {m.nom} - {m.specialite || 'Généraliste'}</option>
                           ))}
                         </Select>
                       </div>

@@ -79,10 +79,10 @@ export async function extraireEmpreinte(fichier, { visageUnique = true } = {}) {
   }
 
   if (detections.length === 0) {
-    throw new Error('Aucun visage detecte. Prenez une photo de face, bien eclairee, sans lunettes de soleil.');
+    throw new Error('Aucun visage détecté. Prenez une photo de face, bien éclairée, sans lunettes de soleil.');
   }
   if (visageUnique && detections.length > 1) {
-    throw new Error('Plusieurs visages detectes. La photo ne doit montrer que le patient.');
+    throw new Error('Plusieurs visages détectés. La photo ne doit montrer que le patient.');
   }
 
   const aire = (d) => d.detection.box.width * d.detection.box.height;

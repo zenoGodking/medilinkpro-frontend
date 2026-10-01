@@ -40,3 +40,9 @@ export async function attribuerDirecteur(etablissementId, directeurId) {
   const { data } = await api.patch(`/api/admin/etablissements/${etablissementId}/directeur`, { directeurId });
   return data;
 }
+
+// Admin : genere un nouveau mot de passe pour un utilisateur qui a perdu le sien (affiche une seule fois).
+export async function genererNouveauMotDePasse(id) {
+  const { data } = await api.post(`/api/admin/utilisateurs/${id}/nouveau-mot-de-passe`);
+  return data.nouveauMotDePasse;
+}

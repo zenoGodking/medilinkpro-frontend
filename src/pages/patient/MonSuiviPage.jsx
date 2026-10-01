@@ -8,7 +8,7 @@ export default function MonSuiviPage() {
     <div className="space-y-6">
       <PageHeader
         title="Mon suivi"
-        description="Vos mesures (tension, glycemie...), vos traitements, vos vaccins et votre suivi de grossesse. Vos medecins peuvent les consulter."
+        description="Vos mesures (tension, glycémie...), vos traitements, vos vaccins et votre suivi de grossesse. Vos médecins peuvent les consulter."
       />
       <SuiviSante patientId={user.userId} estPatient />
     </div>

@@ -24,7 +24,7 @@ function GrossesseEnCours({ g, peutEcrire, medecinAutorise, onMaj }) {
       }));
       setVisite(VISITE_VIDE);
     } catch (err) {
-      setErreur(err.response?.data?.message || "La visite n'a pas pu etre enregistree.");
+      setErreur(err.response?.data?.message || "La visite n'a pas pu être enregistrée.");
     }
   }
 
@@ -34,7 +34,7 @@ function GrossesseEnCours({ g, peutEcrire, medecinAutorise, onMaj }) {
       onMaj(await terminerGrossesse(g.id, fin));
       setFin(null);
     } catch (err) {
-      setErreur(err.response?.data?.message || 'Impossible de cloturer le suivi.');
+      setErreur(err.response?.data?.message || 'Impossible de clôturer le suivi.');
     }
   }
 
@@ -42,14 +42,14 @@ function GrossesseEnCours({ g, peutEcrire, medecinAutorise, onMaj }) {
     <div className="space-y-5">
       <div className="grid sm:grid-cols-3 gap-3">
         <div className="rounded-xl bg-(--color-petrol-50) p-3">
-          <p className="text-xs text-(--color-ink-600)">Age gestationnel</p>
+          <p className="text-xs text-(--color-ink-600)">Âge gestationnel</p>
           <p className="font-display font-bold text-2xl text-(--color-petrol-700)">{g.semainesAmenorrhee} SA + {g.joursAmenorrhee} j</p>
           <p className="text-xs text-(--color-ink-600)">{g.trimestre}e trimestre</p>
         </div>
         <div className="rounded-xl bg-(--color-petrol-50) p-3">
-          <p className="text-xs text-(--color-ink-600)">Terme prevu</p>
+          <p className="text-xs text-(--color-ink-600)">Terme prévu</p>
           <p className="font-semibold text-(--color-petrol-700)">{date(g.dateTermePrevue)}</p>
-          <p className="text-xs text-(--color-ink-600)">Dernieres regles : {date(g.dateDernieresRegles)}</p>
+          <p className="text-xs text-(--color-ink-600)">Dernières règles : {date(g.dateDernieresRegles)}</p>
         </div>
         <div className="rounded-xl bg-(--color-petrol-50) p-3 flex flex-col justify-center">
           <p className="text-xs text-(--color-ink-600) mb-1.5">Progression</p>
@@ -60,7 +60,7 @@ function GrossesseEnCours({ g, peutEcrire, medecinAutorise, onMaj }) {
       </div>
 
       <div>
-        <p className="text-sm font-semibold text-(--color-ink-900) mb-2">Consultations prenatales recommandees (OMS : 8 contacts)</p>
+        <p className="text-sm font-semibold text-(--color-ink-900) mb-2">Consultations prénatales recommandées (OMS : 8 contacts)</p>
         <ol className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {g.contactsRecommandes.map((c) => (
             <li key={c.semaine} className={`rounded-lg px-3 py-2 text-xs ${c.passe ? 'bg-(--color-petrol-50) text-(--color-ink-600)' : 'border border-(--color-petrol-100) text-(--color-ink-900)'}`}>
@@ -74,9 +74,9 @@ function GrossesseEnCours({ g, peutEcrire, medecinAutorise, onMaj }) {
       </div>
 
       <div>
-        <p className="text-sm font-semibold text-(--color-ink-900) mb-2">Visites realisees</p>
+        <p className="text-sm font-semibold text-(--color-ink-900) mb-2">Visites réalisées</p>
         {g.visites.length === 0 ? (
-          <p className="text-sm text-(--color-ink-600)">Aucune visite enregistree.</p>
+          <p className="text-sm text-(--color-ink-600)">Aucune visite enregistrée.</p>
         ) : (
           <ul className="divide-y divide-(--color-petrol-100)">
             {g.visites.map((v) => (
@@ -84,7 +84,7 @@ function GrossesseEnCours({ g, peutEcrire, medecinAutorise, onMaj }) {
                 <p className="font-semibold text-(--color-ink-900)">{date(v.date)} · {v.ageGestationnel} · {v.medecinNom}</p>
                 <p className="text-(--color-ink-600)">
                   {[v.poids && `Poids ${v.poids} kg`, v.tensionSystolique && `Tension ${v.tensionSystolique}/${v.tensionDiastolique ?? '?'}`,
-                    v.hauteurUterineCm && `Hauteur uterine ${v.hauteurUterineCm} cm`].filter(Boolean).join(' · ')}
+                    v.hauteurUterineCm && `Hauteur utérine ${v.hauteurUterineCm} cm`].filter(Boolean).join(' · ')}
                 </p>
                 {v.notes && <p className="text-(--color-ink-600)">{v.notes}</p>}
               </li>
@@ -95,13 +95,13 @@ function GrossesseEnCours({ g, peutEcrire, medecinAutorise, onMaj }) {
 
       {medecinAutorise && (
         <form onSubmit={envoyerVisite} className="rounded-xl bg-(--color-petrol-50) p-4 space-y-3">
-          <p className="text-sm font-semibold text-(--color-ink-900)">Nouvelle consultation prenatale</p>
+          <p className="text-sm font-semibold text-(--color-ink-900)">Nouvelle consultation prénatale</p>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
             <div><FieldLabel>Date</FieldLabel><TextInput type="date" required max={aujourdHui()} value={visite.date} onChange={(e) => setVisite((v) => ({ ...v, date: e.target.value }))} /></div>
             <div><FieldLabel>Poids (kg)</FieldLabel><TextInput inputMode="decimal" value={visite.poids} onChange={(e) => setVisite((v) => ({ ...v, poids: e.target.value }))} /></div>
             <div><FieldLabel>Systolique</FieldLabel><TextInput inputMode="numeric" value={visite.tensionSystolique} onChange={(e) => setVisite((v) => ({ ...v, tensionSystolique: e.target.value }))} /></div>
             <div><FieldLabel>Diastolique</FieldLabel><TextInput inputMode="numeric" value={visite.tensionDiastolique} onChange={(e) => setVisite((v) => ({ ...v, tensionDiastolique: e.target.value }))} /></div>
-            <div><FieldLabel>Haut. uterine (cm)</FieldLabel><TextInput inputMode="decimal" value={visite.hauteurUterineCm} onChange={(e) => setVisite((v) => ({ ...v, hauteurUterineCm: e.target.value }))} /></div>
+            <div><FieldLabel>Haut. utérine (cm)</FieldLabel><TextInput inputMode="decimal" value={visite.hauteurUterineCm} onChange={(e) => setVisite((v) => ({ ...v, hauteurUterineCm: e.target.value }))} /></div>
           </div>
           <Textarea rows={2} placeholder="Observations" value={visite.notes} onChange={(e) => setVisite((v) => ({ ...v, notes: e.target.value }))} />
           <Button type="submit"><Plus size={15} /> Enregistrer la visite</Button>
@@ -122,15 +122,15 @@ function GrossesseEnCours({ g, peutEcrire, medecinAutorise, onMaj }) {
             </div>
             <div><FieldLabel>Date</FieldLabel><TextInput type="date" required max={aujourdHui()} value={fin.dateFin} onChange={(e) => setFin((f) => ({ ...f, dateFin: e.target.value }))} /></div>
           </div>
-          <TextInput placeholder="Precisions (optionnel)" value={fin.issue} onChange={(e) => setFin((f) => ({ ...f, issue: e.target.value }))} />
+          <TextInput placeholder="Précisions (optionnel)" value={fin.issue} onChange={(e) => setFin((f) => ({ ...f, issue: e.target.value }))} />
           <div className="flex gap-2">
-            <Button type="submit">Cloturer le suivi</Button>
+            <Button type="submit">Clôturer le suivi</Button>
             <Button type="button" variant="ghost" onClick={() => setFin(null)}>Annuler</Button>
           </div>
         </form>
       ) : (
         <button type="button" onClick={() => setFin({ statut: 'TERMINEE', dateFin: aujourdHui(), issue: '' })}
-          className="text-sm font-medium text-(--color-ink-600) hover:text-(--color-petrol-600)">Cloturer ce suivi de grossesse</button>
+          className="text-sm font-medium text-(--color-ink-600) hover:text-(--color-petrol-600)">Clôturer ce suivi de grossesse</button>
       ))}
     </div>
   );
@@ -152,7 +152,7 @@ export default function OngletGrossesse({ patientId, estPatient, peutEcrire }) {
       setDdr('');
       charger();
     } catch (err) {
-      setErreur(err.response?.data?.message || "La grossesse n'a pas pu etre enregistree.");
+      setErreur(err.response?.data?.message || "La grossesse n'a pas pu être enregistrée.");
     }
   }
 
@@ -167,13 +167,13 @@ export default function OngletGrossesse({ patientId, estPatient, peutEcrire }) {
         <GrossesseEnCours g={enCours} peutEcrire={peutEcrire} medecinAutorise={peutEcrire && !estPatient} onMaj={maj} />
       ) : peutEcrire ? (
         <form onSubmit={declarer} className="rounded-xl bg-(--color-petrol-50) p-4 space-y-3 max-w-md">
-          <p className="flex items-center gap-2 text-sm font-semibold text-(--color-ink-900)"><Baby size={16} /> Demarrer un suivi de grossesse</p>
+          <p className="flex items-center gap-2 text-sm font-semibold text-(--color-ink-900)"><Baby size={16} /> Démarrer un suivi de grossesse</p>
           <div>
-            <FieldLabel>Date des dernieres regles</FieldLabel>
+            <FieldLabel>Date des dernières règles</FieldLabel>
             <TextInput type="date" required max={aujourdHui()} value={ddr} onChange={(e) => setDdr(e.target.value)} />
           </div>
           {erreur && <p className="text-sm text-(--color-clay-500)">{erreur}</p>}
-          <Button type="submit">Demarrer le suivi</Button>
+          <Button type="submit">Démarrer le suivi</Button>
         </form>
       ) : (
         <p className="text-sm text-(--color-ink-600)">Aucune grossesse en cours de suivi.</p>
@@ -181,7 +181,7 @@ export default function OngletGrossesse({ patientId, estPatient, peutEcrire }) {
 
       {passees.length > 0 && (
         <div>
-          <p className="text-sm font-semibold text-(--color-ink-900) mb-1">Grossesses precedentes</p>
+          <p className="text-sm font-semibold text-(--color-ink-900) mb-1">Grossesses précédentes</p>
           <ul className="text-sm text-(--color-ink-600) space-y-1">
             {passees.map((g) => (
               <li key={g.id}>

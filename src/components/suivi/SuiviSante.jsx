@@ -8,7 +8,7 @@ import OngletGrossesse from './OngletGrossesse';
 
 const ONGLETS = [
   { cle: 'mesures', libelle: 'Mesures', icon: Activity },
-  { cle: 'medicaments', libelle: 'Medicaments', icon: Pill },
+  { cle: 'medicaments', libelle: 'Médicaments', icon: Pill },
   { cle: 'vaccins', libelle: 'Vaccins', icon: Syringe },
   { cle: 'grossesse', libelle: 'Grossesse', icon: Baby },
 ];

@@ -6,6 +6,7 @@ import { Card, Spinner, EmptyState } from '../../components/ui';
 import InfosUrgenceCard from '../../components/InfosUrgenceCard';
 import AutorisationsMedecinsCard from '../../components/AutorisationsMedecinsCard';
 import JournalAccesCard from '../../components/JournalAccesCard';
+import DocumentsMedicauxCard from '../../components/DocumentsMedicauxCard';
 import OrdonnancesPatientCard from '../../components/pharmacie/OrdonnancesPatientCard';
 
 function formatDate(iso) {
@@ -26,7 +27,7 @@ export default function DossierMedicalPage() {
         const data = await getDossierMedicalByPatient(user.userId);
         if (!cancelled) setDossier(data);
       } catch {
-        if (!cancelled) setErrorMsg("Impossible de charger votre dossier medical pour le moment.");
+        if (!cancelled) setErrorMsg("Impossible de charger votre dossier médical pour le moment.");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -46,7 +47,7 @@ export default function DossierMedicalPage() {
   if (errorMsg || !dossier) {
     return (
       <Card>
-        <EmptyState icon={FileHeart} title="Dossier indisponible" description={errorMsg || "Aucune donnee trouvee."} />
+        <EmptyState icon={FileHeart} title="Dossier indisponible" description={errorMsg || "Aucune donnée trouvée."} />
       </Card>
     );
   }
@@ -57,17 +58,18 @@ export default function DossierMedicalPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-display font-bold text-2xl text-(--color-petrol-700)">Mon dossier medical</h1>
+        <h1 className="font-display font-bold text-2xl text-(--color-petrol-700)">Mon dossier médical</h1>
         <p className="text-(--color-ink-600) mt-1">
-          Cree le {formatDate(dossier.dateCreation)} · Mis a jour le {formatDate(dossier.derniereMiseAJour)}
+          Créé le {formatDate(dossier.dateCreation)} · Mis à jour le {formatDate(dossier.derniereMiseAJour)}
         </p>
       </div>
 
       <div className="flex items-center gap-2 bg-(--color-sage-100) text-(--color-sage-500) text-sm font-medium rounded-xl px-4 py-3 w-fit">
         <ShieldCheck size={17} />
-        Dossier chiffre et confidentiel
+        Dossier chiffré et confidentiel
       </div>
 
+      <DocumentsMedicauxCard patientId={user.userId} peutAjouter />
       <OrdonnancesPatientCard patientId={user.userId} />
       <InfosUrgenceCard patientId={user.userId} />
       <AutorisationsMedecinsCard />
@@ -80,7 +82,7 @@ export default function DossierMedicalPage() {
         </h2>
         {consultations.length === 0 ? (
           <Card>
-            <EmptyState icon={Stethoscope} title="Aucune consultation enregistree" description="Vos comptes rendus de consultation apparaitront ici." />
+            <EmptyState icon={Stethoscope} title="Aucune consultation enregistrée" description="Vos comptes rendus de consultation apparaîtront ici." />
           </Card>
         ) : (
           <div className="space-y-3">
@@ -111,11 +113,11 @@ export default function DossierMedicalPage() {
       {/* Resultats d'analyses */}
       <section>
         <h2 className="font-display font-semibold text-lg text-(--color-ink-900) mb-3 flex items-center gap-2">
-          <FlaskConical size={19} className="text-(--color-petrol-600)" /> Resultats d'analyses
+          <FlaskConical size={19} className="text-(--color-petrol-600)" /> Résultats d'analyses
         </h2>
         {resultats.length === 0 ? (
           <Card>
-            <EmptyState icon={FlaskConical} title="Aucun resultat disponible" description="Les resultats transmis par vos laboratoires partenaires apparaitront ici." />
+            <EmptyState icon={FlaskConical} title="Aucun résultat disponible" description="Les résultats transmis par vos laboratoires partenaires apparaîtront ici." />
           </Card>
         ) : (
           <div className="grid sm:grid-cols-2 gap-3">

@@ -1,7 +1,8 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
+import { AuthContext } from './AuthContext';
 import * as authApi from '../api/auth';
+import { viderCopieLocale } from '../api/client';
 
-const AuthContext = createContext(null);
 
 function readStoredUser() {
   try {
@@ -53,7 +54,7 @@ export function AuthProvider({ children }) {
       }
       return response;
     } catch (err) {
-      const message = err.response?.data?.message || "Impossible de creer le compte.";
+      const message = err.response?.data?.message || "Impossible de créer le compte.";
       setError(message);
       throw err;
     } finally {
@@ -62,6 +63,7 @@ export function AuthProvider({ children }) {
   }, [persistSession]);
 
   const logout = useCallback(() => {
+    viderCopieLocale();
     sessionStorage.removeItem('medilinkpro_token');
     sessionStorage.removeItem('medilinkpro_user');
     setUser(null);
@@ -72,8 +74,3 @@ export function AuthProvider({ children }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth doit etre utilise a l\'interieur de AuthProvider');
-  return ctx;
-}

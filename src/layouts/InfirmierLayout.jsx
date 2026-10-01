@@ -1,8 +1,9 @@
-import { BellRing } from 'lucide-react';
+import { BellRing, UserCog } from 'lucide-react';
 import RoleLayout from './RoleLayout';
 
 const NAV_ITEMS = [
   { to: '/infirmier', label: 'Alertes', icon: BellRing, end: true },
+  { to: '/infirmier/profil', label: 'Mon profil', icon: UserCog },
 ];
 
 export default function InfirmierLayout({ children }) {

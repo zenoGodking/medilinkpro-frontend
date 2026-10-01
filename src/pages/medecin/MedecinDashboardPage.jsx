@@ -46,7 +46,7 @@ export default function MedecinDashboardPage() {
         <h1 className="font-display font-bold text-2xl sm:text-3xl text-(--color-petrol-700)">
           Bonjour Dr {user?.prenom} 👋
         </h1>
-        <p className="text-(--color-ink-600) mt-1">Voici un apercu de votre activite.</p>
+        <p className="text-(--color-ink-600) mt-1">Voici un aperçu de votre activité.</p>
       </div>
 
       {loading ? (
@@ -78,8 +78,8 @@ export default function MedecinDashboardPage() {
         <Card>
           <EmptyState
             icon={CalendarHeart}
-            title="Aucun rendez-vous a venir"
-            description="Vos prochains rendez-vous patients apparaitront ici."
+            title="Aucun rendez-vous à venir"
+            description="Vos prochains rendez-vous patients apparaîtront ici."
           />
         </Card>
       )}
@@ -92,7 +92,7 @@ export default function MedecinDashboardPage() {
             </div>
             <h3 className="font-display font-semibold text-(--color-ink-900)">Mon agenda</h3>
             <p className="text-sm text-(--color-ink-600) mt-1">
-              {aVenir.length > 0 ? `${aVenir.length} a venir` : 'Aucun rendez-vous planifie'}
+              {aVenir.length > 0 ? `${aVenir.length} à venir` : 'Aucun rendez-vous planifié'}
             </p>
           </Card>
         </Link>

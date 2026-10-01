@@ -15,7 +15,7 @@ export default function CarteScanneePage() {
     scannerCarteUrgence(jeton)
       .then(setCarte)
       .catch((err) => setErreur(err.response?.status === 404
-        ? "Cette carte d'urgence n'existe pas ou a ete remplacee par son proprietaire."
+        ? "Cette carte d'urgence n'existe pas ou a été remplacée par son propriétaire."
         : 'Impossible de lire cette carte pour le moment.'));
   }, [jeton]);
 
@@ -37,13 +37,13 @@ export default function CarteScanneePage() {
           <div className="text-sm text-(--color-ink-600)">
             <p className="font-display font-bold text-lg text-(--color-petrol-700)">{carte.prenom} {carte.nom}</p>
             {carte.dateNaissance && <p>Ne(e) le {new Date(carte.dateNaissance).toLocaleDateString('fr-FR')}</p>}
-            {carte.decede && <p className="font-semibold">Personne declaree decedee.</p>}
+            {carte.decede && <p className="font-semibold">Personne déclarée décédée.</p>}
           </div>
         </div>
 
         {carte.conditionsUrgence && (
           <div className="rounded-xl bg-(--color-clay-100) p-3">
-            <p className="flex items-center gap-1 text-xs font-semibold text-(--color-clay-500)"><Activity size={13} /> A signaler aux secours</p>
+            <p className="flex items-center gap-1 text-xs font-semibold text-(--color-clay-500)"><Activity size={13} /> À signaler aux secours</p>
             <p className="text-sm font-semibold text-(--color-petrol-700) mt-1">{carte.conditionsUrgence}</p>
           </div>
         )}
@@ -52,11 +52,11 @@ export default function CarteScanneePage() {
           <div className="rounded-xl bg-(--color-clay-100) p-3">
             <p className="flex items-center gap-1 text-xs font-semibold text-(--color-clay-500)"><Droplet size={13} /> Groupe sanguin</p>
             <p className="font-display font-bold text-2xl text-(--color-clay-500)">{libelleGroupeSanguin(carte.groupeSanguin)}</p>
-            <p className="text-[11px] text-(--color-clay-500)">A confirmer avant transfusion</p>
+            <p className="text-[11px] text-(--color-clay-500)">À confirmer avant transfusion</p>
           </div>
           <div className="rounded-xl bg-(--color-amber-400)/15 p-3">
             <p className="flex items-center gap-1 text-xs font-semibold text-(--color-amber-500)"><ShieldAlert size={13} /> Allergies</p>
-            <p className="text-sm font-semibold text-(--color-petrol-700) mt-1">{carte.allergies || 'Aucune declaree'}</p>
+            <p className="text-sm font-semibold text-(--color-petrol-700) mt-1">{carte.allergies || 'Aucune déclarée'}</p>
           </div>
         </div>
 
@@ -72,13 +72,13 @@ export default function CarteScanneePage() {
             <Phone size={20} />
           </a>
         ) : (
-          <p className="text-sm text-(--color-ink-600)">Aucun contact d'urgence renseigne.</p>
+          <p className="text-sm text-(--color-ink-600)">Aucun contact d'urgence renseigné.</p>
         )}
 
         {carte.patientId && (
           <Link to={`/urgence/carnet/${carte.patientId}`} className="block">
             <Button variant="ghost" className="w-full border border-(--color-petrol-100)">
-              <FileHeart size={16} /> Carnet medical complet (lecture seule) <ArrowRight size={15} />
+              <FileHeart size={16} /> Carnet médical complet (lecture seule) <ArrowRight size={15} />
             </Button>
           </Link>
         )}

@@ -44,7 +44,7 @@ export default function MedecinPatientsPage() {
     <div className="space-y-6">
       <PageHeader
         title="Carnets des patients"
-        description="Vous pouvez consulter tous les carnets. Vous ne pouvez ecrire que dans celui de vos patients (autorisation du patient ou ancien patient)."
+        description="Vous pouvez consulter tous les carnets. Vous ne pouvez écrire que dans celui de vos patients (autorisation du patient ou ancien patient)."
       />
 
       <div className="relative max-w-md">
@@ -53,7 +53,7 @@ export default function MedecinPatientsPage() {
       </div>
 
       {affiches.length === 0 ? (
-        <Card><EmptyState icon={Users} title="Aucun patient trouve" description="Modifiez votre recherche." /></Card>
+        <Card><EmptyState icon={Users} title="Aucun patient trouvé" description="Modifiez votre recherche." /></Card>
       ) : (
         <div className="grid sm:grid-cols-2 gap-3">
           {affiches.map((p) => (
@@ -65,11 +65,11 @@ export default function MedecinPatientsPage() {
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-(--color-ink-900) truncate">
                     {p.prenom} {p.nom}
-                    {p.decede && <span className="ml-2 text-xs font-semibold text-(--color-ink-600)">(decede)</span>}
+                    {p.decede && <span className="ml-2 text-xs font-semibold text-(--color-ink-600)">(décédé)</span>}
                   </p>
                   {ecriture.has(p.id) ? (
                     <p className="flex items-center gap-1 text-xs font-semibold text-(--color-sage-500)">
-                      <PenLine size={12} /> {ecriture.get(p.id) === 'AUTORISATION_PATIENT' ? 'Autorise par le patient' : 'Votre patient'}
+                      <PenLine size={12} /> {ecriture.get(p.id) === 'AUTORISATION_PATIENT' ? 'Autorisé par le patient' : 'Votre patient'}
                     </p>
                   ) : (
                     <p className="flex items-center gap-1 text-xs text-(--color-ink-300)"><Eye size={12} /> Lecture seule</p>

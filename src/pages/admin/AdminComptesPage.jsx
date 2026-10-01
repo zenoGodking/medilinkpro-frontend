@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import { UserCheck, Check, X, Stethoscope } from 'lucide-react';
 import { getComptesEnAttente, validerCompte } from '../../api/admin';
 import { Card, Spinner, EmptyState, PageHeader, Button, RoleBadge, Select, Textarea } from '../../components/ui';
+import PhotoInfirmier from '../../components/PhotoInfirmier';
 
 const FILTRES_ROLE = [
   { value: '', label: 'Tous les roles' },
-  { value: 'MEDECIN', label: 'Medecin' },
+  { value: 'MEDECIN', label: 'Médecin' },
   { value: 'INFIRMIER', label: 'Infirmier(e)' },
   { value: 'PHARMACIEN', label: 'Pharmacien(ne)' },
   { value: 'DIRECTEUR', label: 'Directeur' },
@@ -20,7 +21,6 @@ export default function AdminComptesPage() {
   const [processingId, setProcessingId] = useState(null);
 
   async function load(role) {
-    setLoading(true);
     try {
       const data = await getComptesEnAttente(role || undefined);
       setComptes(data);
@@ -31,7 +31,14 @@ export default function AdminComptesPage() {
     }
   }
 
-  useEffect(() => { load(filtreRole); }, [filtreRole]);
+  useEffect(() => {
+    let annule = false;
+    getComptesEnAttente(filtreRole || undefined)
+      .then((data) => { if (!annule) setComptes(data); })
+      .catch(() => { if (!annule) setComptes([]); })
+      .finally(() => { if (!annule) setLoading(false); });
+    return () => { annule = true; };
+  }, [filtreRole]);
 
   async function handleApprouver(id) {
     setProcessingId(id);
@@ -74,7 +81,7 @@ export default function AdminComptesPage() {
         title="Comptes en attente"
         description="Approuvez ou refusez les inscriptions professionnelles."
         action={
-          <Select value={filtreRole} onChange={(e) => setFiltreRole(e.target.value)} className="!w-auto">
+          <Select value={filtreRole} onChange={(e) => { setLoading(true); setFiltreRole(e.target.value); }} className="!w-auto">
             {FILTRES_ROLE.map((f) => (
               <option key={f.value} value={f.value}>{f.label}</option>
             ))}
@@ -84,7 +91,7 @@ export default function AdminComptesPage() {
 
       {comptes.length === 0 ? (
         <Card>
-          <EmptyState icon={UserCheck} title="Aucun compte en attente" description="Les nouvelles inscriptions professionnelles apparaitront ici." />
+          <EmptyState icon={UserCheck} title="Aucun compte en attente" description="Les nouvelles inscriptions professionnelles apparaîtront ici." />
         </Card>
       ) : (
         <div className="space-y-3">
@@ -100,9 +107,15 @@ export default function AdminComptesPage() {
                   {c.telephone && <p className="text-sm text-(--color-ink-600)">{c.telephone}</p>}
                   {c.role === 'MEDECIN' && (
                     <p className="flex items-center gap-1.5 text-sm text-(--color-amber-500) font-medium mt-1.5">
-                      <Stethoscope size={14} /> {c.specialite || 'Specialite non renseignee'}
+                      <Stethoscope size={14} /> {c.specialite || 'Spécialité non renseignée'}
                       {c.numeroOrdre && ` · Ordre n° ${c.numeroOrdre}`}
                     </p>
+                  )}
+                  {c.role === 'INFIRMIER' && (
+                    <div className="flex items-center gap-2 mt-2">
+                      <PhotoInfirmier infirmierId={c.id} disponible={!!c.photoDisponible} className="w-16 h-16" />
+                      {!c.photoDisponible && <span className="text-xs text-(--color-clay-500)">Aucune photo de profil</span>}
+                    </div>
                   )}
                   <p className="text-xs text-(--color-ink-300) mt-1.5">
                     Inscrit le {new Date(c.dateInscription).toLocaleDateString('fr-FR')}

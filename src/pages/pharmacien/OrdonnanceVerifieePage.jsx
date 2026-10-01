@@ -17,17 +17,17 @@ export default function OrdonnanceVerifieePage() {
 
   useEffect(() => {
     verifierOrdonnance(jeton).then(setO).catch((err) => setErreur(err.response?.status === 404
-      ? err.response.data.message : "Verification impossible pour le moment."));
+      ? err.response.data.message : "Vérification impossible pour le moment."));
   }, [jeton]);
 
   async function delivrer() {
     setEnvoi(true);
     try {
       setO(await delivrerOrdonnance(jeton));
-      setMessage('Ordonnance delivree et enregistree.');
+      setMessage('Ordonnance délivrée et enregistrée.');
     } catch (err) {
       setMessage(null);
-      setErreur(err.response?.data?.message || 'Delivrance impossible.');
+      setErreur(err.response?.data?.message || 'Délivrance impossible.');
     } finally {
       setEnvoi(false);
       setConfirmer(false);
@@ -60,20 +60,20 @@ export default function OrdonnanceVerifieePage() {
   return (
     <div className="space-y-5 max-w-2xl">
       {retour}
-      <PageHeader title="Ordonnance verifiee" description={`Emise le ${date(o.dateEmission)} · valable jusqu'au ${date(o.dateExpiration)}`} />
+      <PageHeader title="Ordonnance vérifiée" description={`Émise le ${date(o.dateEmission)} · valable jusqu'au ${date(o.dateExpiration)}`} />
 
       {o.delivree ? (
         <p className={`flex items-start gap-2 text-sm rounded-xl px-4 py-3 ${message ? 'bg-(--color-sage-100) text-(--color-sage-500)' : 'bg-(--color-clay-100) text-(--color-clay-500)'}`}>
           {message ? <CheckCircle2 size={17} className="mt-0.5 shrink-0" /> : <AlertTriangle size={17} className="mt-0.5 shrink-0" />}
-          <span>{message ? `${message} ` : 'Deja delivree : ne pas delivrer a nouveau. '}Delivree le {dateHeure(o.dateDelivrance)} par {o.delivreePar}.</span>
+          <span>{message ? `${message} ` : 'Déjà délivrée : ne pas délivrer à nouveau. '}Délivrée le {dateHeure(o.dateDelivrance)} par {o.delivreePar}.</span>
         </p>
       ) : o.expiree ? (
         <p className="flex items-start gap-2 text-sm rounded-xl px-4 py-3 bg-(--color-clay-100) text-(--color-clay-500)">
-          <AlertTriangle size={17} className="mt-0.5 shrink-0" /> Ordonnance expiree le {date(o.dateExpiration)} : le patient doit consulter a nouveau.
+          <AlertTriangle size={17} className="mt-0.5 shrink-0" /> Ordonnance expirée le {date(o.dateExpiration)} : le patient doit consulter à nouveau.
         </p>
       ) : (
         <p className="flex items-center gap-2 text-sm rounded-xl px-4 py-3 bg-(--color-sage-100) text-(--color-sage-500)">
-          <ShieldCheck size={17} /> Ordonnance authentique, valide et pas encore delivree.
+          <ShieldCheck size={17} /> Ordonnance authentique, valide et pas encore délivrée.
         </p>
       )}
       {erreur && <p className="text-sm text-(--color-clay-500)">{erreur}</p>}
@@ -81,7 +81,7 @@ export default function OrdonnanceVerifieePage() {
       <Card className="p-5 space-y-4">
         <div className="grid sm:grid-cols-2 gap-4 text-sm">
           <div>
-            <p className="text-xs text-(--color-ink-600)">Patient (verifiez son identite)</p>
+            <p className="text-xs text-(--color-ink-600)">Patient (vérifiez son identité)</p>
             <p className="font-semibold text-(--color-ink-900)">{o.patientPrenom} {o.patientNom}</p>
             {o.patientDateNaissance && <p className="text-(--color-ink-600)">Ne(e) le {date(o.patientDateNaissance)}</p>}
           </div>
@@ -92,19 +92,19 @@ export default function OrdonnanceVerifieePage() {
           </div>
         </div>
         <div className="rounded-xl bg-(--color-petrol-50) p-4">
-          <p className="flex items-center gap-1.5 text-xs font-semibold text-(--color-petrol-600)"><Pill size={13} /> Medicaments</p>
+          <p className="flex items-center gap-1.5 text-xs font-semibold text-(--color-petrol-600)"><Pill size={13} /> Médicaments</p>
           <p className="text-(--color-ink-900) whitespace-pre-line mt-1">{o.medicaments}</p>
           {o.posologie && <p className="text-sm text-(--color-ink-600) whitespace-pre-line mt-2">Posologie : {o.posologie}</p>}
         </div>
 
         {delivrable && (confirmer ? (
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm text-(--color-ink-600)">Confirmer la delivrance ? Elle ne pourra plus etre delivree ailleurs.</span>
-            <Button onClick={delivrer} disabled={envoi}>{envoi ? 'Enregistrement...' : 'Oui, delivrer'}</Button>
+            <span className="text-sm text-(--color-ink-600)">Confirmer la délivrance ? Elle ne pourra plus être délivrée ailleurs.</span>
+            <Button onClick={delivrer} disabled={envoi}>{envoi ? 'Enregistrement...' : 'Oui, délivrer'}</Button>
             <Button variant="ghost" onClick={() => setConfirmer(false)}>Annuler</Button>
           </div>
         ) : (
-          <Button className="w-full" onClick={() => setConfirmer(true)}><CheckCircle2 size={16} /> Marquer comme delivree</Button>
+          <Button className="w-full" onClick={() => setConfirmer(true)}><CheckCircle2 size={16} /> Marquer comme délivrée</Button>
         ))}
       </Card>
     </div>

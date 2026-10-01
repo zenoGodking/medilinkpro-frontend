@@ -6,15 +6,15 @@ import GraphiqueMesures from './GraphiqueMesures';
 
 const TYPES_MESURE = {
   TENSION: { libelle: 'Tension', unite: 'mmHg', zone: { min: 90, max: 140, libelle: 'Zone habituelle (systolique)' } },
-  GLYCEMIE: { libelle: 'Glycemie', unite: 'g/L', zone: { min: 0.7, max: 1.26, libelle: 'Zone habituelle a jeun' } },
+  GLYCEMIE: { libelle: 'Glycémie', unite: 'g/L', zone: { min: 0.7, max: 1.26, libelle: 'Zone habituelle à jeun' } },
   POIDS: { libelle: 'Poids', unite: 'kg' },
-  TEMPERATURE: { libelle: 'Temperature', unite: '°C', zone: { min: 36, max: 37.9, libelle: 'Zone habituelle' } },
-  SATURATION_O2: { libelle: 'Oxygene (SpO2)', unite: '%', zone: { min: 95, max: 100, libelle: 'Zone habituelle' } },
+  TEMPERATURE: { libelle: 'Température', unite: '°C', zone: { min: 36, max: 37.9, libelle: 'Zone habituelle' } },
+  SATURATION_O2: { libelle: 'Oxygène (SpO2)', unite: '%', zone: { min: 95, max: 100, libelle: 'Zone habituelle' } },
 };
 
 const NIVEAUX = {
   NORMAL: { icon: CheckCircle2, libelle: 'Normal', classe: 'bg-(--color-sage-100) text-(--color-sage-500)' },
-  ATTENTION: { icon: AlertTriangle, libelle: 'A surveiller', classe: 'bg-(--color-amber-400)/20 text-(--color-amber-500)' },
+  ATTENTION: { icon: AlertTriangle, libelle: 'À surveiller', classe: 'bg-(--color-amber-400)/20 text-(--color-amber-500)' },
   ALERTE: { icon: OctagonAlert, libelle: 'Alerte', classe: 'bg-(--color-clay-100) text-(--color-clay-500)' },
 };
 
@@ -67,7 +67,7 @@ export default function OngletMesures({ patientId, peutEcrire }) {
       setForm((f) => ({ ...f, valeur: '', valeur2: '', note: '', dateMesure: maintenantLocal() }));
       await charger();
     } catch (err) {
-      setErreur(err.response?.data?.message || "La mesure n'a pas pu etre enregistree.");
+      setErreur(err.response?.data?.message || "La mesure n'a pas pu être enregistrée.");
     } finally {
       setEnvoi(false);
     }
@@ -123,11 +123,11 @@ export default function OngletMesures({ patientId, peutEcrire }) {
             </div>
             {type === 'GLYCEMIE' && (
               <label className="flex items-center gap-2 text-sm text-(--color-ink-600) self-end pb-3">
-                <input type="checkbox" checked={form.aJeun} onChange={(e) => setForm((f) => ({ ...f, aJeun: e.target.checked }))} /> A jeun
+                <input type="checkbox" checked={form.aJeun} onChange={(e) => setForm((f) => ({ ...f, aJeun: e.target.checked }))} /> À jeun
               </label>
             )}
           </div>
-          <TextInput placeholder="Note (optionnel) : apres effort, oubli de traitement..." value={form.note}
+          <TextInput placeholder="Note (optionnel) : après effort, oubli de traitement..." value={form.note}
             onChange={(e) => setForm((f) => ({ ...f, note: e.target.value }))} />
           {erreur && <p className="text-sm text-(--color-clay-500)">{erreur}</p>}
           <Button type="submit" disabled={envoi}><Plus size={15} /> Ajouter la mesure</Button>
@@ -153,14 +153,14 @@ export default function OngletMesures({ patientId, peutEcrire }) {
                     {new Date(m.dateMesure).toLocaleString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
                   </td>
                   <td className="py-2 pr-3 font-semibold text-(--color-ink-900) whitespace-nowrap">
-                    {valeurAffichee(m)} {m.unite}{m.type === 'GLYCEMIE' && <span className="font-normal text-(--color-ink-600)"> {m.aJeun ? '(a jeun)' : '(non a jeun)'}</span>}
+                    {valeurAffichee(m)} {m.unite}{m.type === 'GLYCEMIE' && <span className="font-normal text-(--color-ink-600)"> {m.aJeun ? '(à jeun)' : '(non à jeun)'}</span>}
                   </td>
                   <td className="py-2 pr-3">
                     <Niveau niveau={m.niveau} />
                     {m.interpretation && <p className="text-xs text-(--color-ink-600) mt-0.5">{m.interpretation}</p>}
                     {m.note && <p className="text-xs text-(--color-ink-300) mt-0.5">{m.note}</p>}
                   </td>
-                  <td className="py-2 pr-3 text-xs text-(--color-ink-600)">{m.saisieParRole === 'MEDECIN' ? 'Medecin' : 'Auto-mesure'}</td>
+                  <td className="py-2 pr-3 text-xs text-(--color-ink-600)">{m.saisieParRole === 'MEDECIN' ? 'Médecin' : 'Auto-mesure'}</td>
                   <td className="py-2 text-right">
                     {m.saisieParMoi && (
                       <button type="button" onClick={() => retirer(m.id)} aria-label="Supprimer la mesure"
@@ -176,7 +176,7 @@ export default function OngletMesures({ patientId, peutEcrire }) {
         </div>
       )}
       <p className="text-xs text-(--color-ink-300)">
-        Lecture indicative (seuils usuels chez l'adulte) : elle ne remplace pas l'avis de votre medecin.
+        Lecture indicative (seuils usuels chez l'adulte) : elle ne remplace pas l'avis de votre médecin.
       </p>
     </div>
   );

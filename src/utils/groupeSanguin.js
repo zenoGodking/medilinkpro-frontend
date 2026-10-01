@@ -7,5 +7,5 @@ export const GROUPE_SANGUIN_LABELS = {
 };
 
 export function libelleGroupeSanguin(groupe) {
-  return groupe ? GROUPE_SANGUIN_LABELS[groupe] || groupe : 'Non renseigne';
+  return groupe ? GROUPE_SANGUIN_LABELS[groupe] || groupe : 'Non renseigné';
 }

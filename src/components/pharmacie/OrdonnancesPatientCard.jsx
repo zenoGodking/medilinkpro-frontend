@@ -36,7 +36,7 @@ export default function OrdonnancesPatientCard({ patientId }) {
                 <p className="text-(--color-ink-600) whitespace-pre-line">{o.medicaments}</p>
                 {o.dateDelivrance && (
                   <p className="flex items-center gap-1 text-xs text-(--color-sage-500) mt-1">
-                    <CheckCircle2 size={12} /> Delivree le {new Date(o.dateDelivrance).toLocaleDateString('fr-FR')} · {o.delivreePar}
+                    <CheckCircle2 size={12} /> Délivrée le {new Date(o.dateDelivrance).toLocaleDateString('fr-FR')} · {o.delivreePar}
                   </p>
                 )}
               </div>
@@ -44,7 +44,7 @@ export default function OrdonnancesPatientCard({ patientId }) {
                 <button type="button" onClick={() => setQr(null)} aria-label="Masquer" className="p-1.5 text-(--color-ink-300)"><X size={16} /></button>
               ) : (
                 <Button variant="ghost" className="!px-3 !py-1.5 border border-(--color-petrol-100) shrink-0" onClick={() => afficher(o)}>
-                  <QrCode size={15} /> Presenter en pharmacie
+                  <QrCode size={15} /> Présenter en pharmacie
                 </Button>
               ))}
             </div>
@@ -52,7 +52,7 @@ export default function OrdonnancesPatientCard({ patientId }) {
               <div className="mt-3 flex flex-col items-center gap-2 rounded-xl bg-(--color-petrol-50) p-4">
                 <img src={qr.image} alt="QR code de l'ordonnance" className="w-56 h-56 bg-white p-2 rounded-lg" />
                 <p className="text-xs text-(--color-ink-600) text-center">
-                  Montrez ce code au pharmacien. Valable jusqu'au {new Date(qr.dateExpiration).toLocaleDateString('fr-FR')}, delivrable une seule fois.
+                  Montrez ce code au pharmacien. Valable jusqu'au {new Date(qr.dateExpiration).toLocaleDateString('fr-FR')}, délivrable une seule fois.
                 </p>
               </div>
             )}

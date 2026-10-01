@@ -28,7 +28,7 @@ export default function PhotoFacialeCard() {
       setEdition(false);
       setVisage(null);
     } catch (err) {
-      setErreur(err.response?.data?.message || "La photo n'a pas pu etre enregistree.");
+      setErreur(err.response?.data?.message || "La photo n'a pas pu être enregistrée.");
     } finally {
       setEnvoi(false);
     }
@@ -41,7 +41,7 @@ export default function PhotoFacialeCard() {
     <Card className={`p-5 ${manquante ? 'border-(--color-clay-500)/40' : ''}`}>
       <div className="flex items-start gap-4">
         {photo ? (
-          <img src={photo} alt="Ma photo de reference" className="w-16 h-16 rounded-xl object-cover" />
+          <img src={photo} alt="Ma photo de référence" className="w-16 h-16 rounded-xl object-cover" />
         ) : (
           <div className="w-16 h-16 rounded-xl bg-(--color-clay-100) flex items-center justify-center text-(--color-clay-500) shrink-0">
             <ScanFace size={26} />
@@ -50,12 +50,12 @@ export default function PhotoFacialeCard() {
         <div className="flex-1 min-w-0">
           <h2 className="font-display font-semibold text-(--color-petrol-700) flex items-center gap-1.5">
             {manquante ? 'Ajoutez votre photo pour les urgences' : (
-              <><CheckCircle2 size={16} className="text-(--color-sage-500)" /> Photo d'urgence enregistree</>
+              <><CheckCircle2 size={16} className="text-(--color-sage-500)" /> Photo d'urgence enregistrée</>
             )}
           </h2>
           <p className="text-sm text-(--color-ink-600) mt-0.5">
             En cas d'accident, les secours pourront retrouver votre groupe sanguin, vos allergies
-            et le numero de votre proche en scannant votre visage.
+            et le numéro de votre proche en scannant votre visage.
           </p>
           {!edition && (
             <Button variant={manquante ? 'primary' : 'ghost'} className="mt-3" onClick={() => setEdition(true)}>

@@ -30,8 +30,8 @@ export default function CapturePhotoVisage({ onResultat, visageUnique = true, ca
       const resultat = await extraireEmpreinte(fichier, { visageUnique });
       setEtat('ok');
       setMessage(resultat.visagesDetectes > 1
-        ? `${resultat.visagesDetectes} visages detectes : le plus grand a ete retenu.`
-        : 'Visage detecte.');
+        ? `${resultat.visagesDetectes} visages détectés : le plus grand a été retenu.`
+        : 'Visage détecté.');
       onResultat(resultat);
     } catch (err) {
       setEtat('erreur');
@@ -87,7 +87,7 @@ export default function CapturePhotoVisage({ onResultat, visageUnique = true, ca
         >
           <Camera size={26} strokeWidth={1.75} />
           <span className="text-sm font-semibold">{libelle || 'Prendre une photo du visage'}</span>
-          <span className="text-xs text-(--color-ink-600)">De face, bien eclaire, sans lunettes de soleil</span>
+          <span className="text-xs text-(--color-ink-600)">De face, bien éclairé, sans lunettes de soleil</span>
         </button>
       )}
     </div>

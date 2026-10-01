@@ -42,7 +42,7 @@ export async function genererFondEcran({ lien, patient, afficherInfos }) {
   ctx.fillStyle = '#ffffff';
   ctx.font = 'bold 64px sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('URGENCE MEDICALE', LARGEUR / 2, haut + 88);
+  ctx.fillText('URGENCE MÉDICALE', LARGEUR / 2, haut + 88);
 
   // QR code sur fond blanc
   const tailleQr = 520;
@@ -63,9 +63,9 @@ export async function genererFondEcran({ lien, patient, afficherInfos }) {
     const infos = [
       `${patient.prenom} - Groupe sanguin : ${libelleGroupeSanguin(patient.groupeSanguin)}`,
       patient.allergies && `Allergies : ${patient.allergies}`,
-      patient.conditionsUrgence && `A signaler : ${patient.conditionsUrgence}`,
+      patient.conditionsUrgence && `À signaler : ${patient.conditionsUrgence}`,
       patient.contactUrgenceTelephone
-        && `Prevenir : ${patient.contactUrgenceNom ? `${patient.contactUrgenceNom} ` : ''}${patient.contactUrgenceTelephone}`,
+        && `Prévenir : ${patient.contactUrgenceNom ? `${patient.contactUrgenceNom} ` : ''}${patient.contactUrgenceTelephone}`,
     ].filter(Boolean);
     ctx.font = 'bold 44px sans-serif';
     y += 40;

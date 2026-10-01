@@ -2,6 +2,8 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { LogOut, Stethoscope, ScanFace } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import InstallerApp from '../components/InstallerApp';
+import ClocheNotifications from '../components/ClocheNotifications';
+import BandeauReseau from '../components/BandeauReseau';
 
 /**
  * Layout partage par tous les espaces authentifies (Patient, Medecin, Infirmier,
@@ -58,6 +60,7 @@ export default function RoleLayout({ navItems, roleLabel, children }) {
 
           <div className="flex items-center gap-3">
             <InstallerApp />
+            <ClocheNotifications />
             {/* Identification d'urgence : accessible depuis tous les espaces */}
             <NavLink
               to="/urgence"
@@ -78,7 +81,7 @@ export default function RoleLayout({ navItems, roleLabel, children }) {
               className="flex items-center gap-1.5 text-sm font-medium text-(--color-clay-500) hover:text-(--color-clay-500)/80 transition-colors px-3 py-2 rounded-full hover:bg-(--color-clay-100)"
             >
               <LogOut size={16} strokeWidth={2} />
-              <span className="hidden sm:inline">Deconnexion</span>
+              <span className="hidden sm:inline">Déconnexion</span>
             </button>
           </div>
         </div>
@@ -103,6 +106,7 @@ export default function RoleLayout({ navItems, roleLabel, children }) {
           ))}
         </nav>
       </header>
+      <BandeauReseau />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">{children}</main>
     </div>

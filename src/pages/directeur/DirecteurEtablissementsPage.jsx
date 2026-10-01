@@ -4,7 +4,7 @@ import { getMesEtablissements } from '../../api/directeur';
 export default function DirecteurEtablissementsPage() {
   return (
     <EtablissementsManager
-      description="Les hopitaux et cliniques dont vous etes responsable. Un etablissement que vous creez vous est automatiquement attribue."
+      description="Les hôpitaux et cliniques dont vous êtes responsable. Un établissement que vous créez vous est automatiquement attribué."
       chargerEtablissements={getMesEtablissements}
     />
   );

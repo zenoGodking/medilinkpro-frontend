@@ -48,7 +48,7 @@ export default function ScannerQr({ onCode }) {
         };
         lire();
       } catch {
-        setErreur("Camera inaccessible : autorisez-la dans le navigateur (le site doit etre en HTTPS).");
+        setErreur("Caméra inaccessible : autorisez-la dans le navigateur (le site doit être en HTTPS).");
         setActif(false);
       }
     }
@@ -68,7 +68,7 @@ export default function ScannerQr({ onCode }) {
       </div>
       <canvas ref={canvasRef} className="hidden" />
       <Button onClick={() => { setErreur(null); setActif((a) => !a); }} className="w-full">
-        {actif ? <><CameraOff size={16} /> Arreter la camera</> : <><Camera size={16} /> Scanner avec la camera</>}
+        {actif ? <><CameraOff size={16} /> Arrêter la caméra</> : <><Camera size={16} /> Scanner avec la caméra</>}
       </Button>
       {erreur && <p className="text-sm text-(--color-clay-500)">{erreur}</p>}
     </div>

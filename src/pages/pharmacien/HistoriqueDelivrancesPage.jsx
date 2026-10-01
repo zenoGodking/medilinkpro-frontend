@@ -10,9 +10,9 @@ export default function HistoriqueDelivrancesPage() {
   if (!liste) return <div className="flex justify-center py-20"><Spinner className="w-7 h-7" /></div>;
   return (
     <div className="space-y-6">
-      <PageHeader title="Historique des delivrances" description="Les ordonnances que vous avez delivrees." />
+      <PageHeader title="Historique des délivrances" description="Les ordonnances que vous avez délivrées." />
       {liste.length === 0 ? (
-        <Card><EmptyState icon={History} title="Aucune delivrance" description="Les ordonnances delivrees apparaitront ici." /></Card>
+        <Card><EmptyState icon={History} title="Aucune délivrance" description="Les ordonnances délivrées apparaîtront ici." /></Card>
       ) : (
         <Card className="p-5">
           <ul className="divide-y divide-(--color-petrol-100)">
@@ -20,7 +20,7 @@ export default function HistoriqueDelivrancesPage() {
               <li key={i} className="py-3 text-sm">
                 <p className="font-semibold text-(--color-ink-900)">{o.patientPrenom} {o.patientNom} · Dr {o.medecinNomComplet}</p>
                 <p className="text-(--color-ink-600) truncate">{o.medicaments}</p>
-                <p className="text-xs text-(--color-ink-300)">Delivree le {new Date(o.dateDelivrance).toLocaleString('fr-FR')}</p>
+                <p className="text-xs text-(--color-ink-300)">Délivrée le {new Date(o.dateDelivrance).toLocaleString('fr-FR')}</p>
               </li>
             ))}
           </ul>

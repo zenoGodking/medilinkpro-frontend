@@ -7,17 +7,13 @@ import { useEffect, useRef, useState } from 'react';
  */
 export default function Reveal({ children, delay = 0, className = '' }) {
   const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
+  // Sans animation possible (mouvement reduit demande, navigateur ancien) : contenu visible d'emblee.
+  const [visible, setVisible] = useState(() => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    || typeof IntersectionObserver === 'undefined');
 
   useEffect(() => {
     const node = ref.current;
-    if (!node) return undefined;
-
-    const prefersReduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReduced || typeof IntersectionObserver === 'undefined') {
-      setVisible(true);
-      return undefined;
-    }
+    if (!node || visible) return undefined;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -30,7 +26,7 @@ export default function Reveal({ children, delay = 0, className = '' }) {
     );
     observer.observe(node);
     return () => observer.disconnect();
-  }, []);
+  }, [visible]);
 
   return (
     <div

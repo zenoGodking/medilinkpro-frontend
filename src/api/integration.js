@@ -37,3 +37,9 @@ export async function getDemandesEtablissement(etablissementId) {
   const { data } = await api.get(`/api/etablissements/${etablissementId}/demandes-integration`);
   return data;
 }
+
+// Directeur/Admin : demandes d'adhesion en attente (directeur : ses etablissements, admin : toutes).
+export async function getDemandesEnAttente() {
+  const { data } = await api.get('/api/demandes-integration/en-attente');
+  return data;
+}

@@ -29,14 +29,16 @@ const STATUT_STYLES = {
   ANNULE: 'bg-(--color-clay-100) text-(--color-clay-500)',
   TERMINE: 'bg-(--color-petrol-100) text-(--color-petrol-600)',
   NO_SHOW: 'bg-(--color-clay-100) text-(--color-clay-500)',
+  REFUSE: 'bg-(--color-clay-100) text-(--color-clay-500)',
 };
 
 const STATUT_LABELS = {
-  EN_ATTENTE: 'En attente',
-  CONFIRME: 'Confirme',
-  ANNULE: 'Annule',
-  TERMINE: 'Termine',
+  EN_ATTENTE: 'En attente du médecin',
+  CONFIRME: 'Confirmé',
+  ANNULE: 'Annulé',
+  TERMINE: 'Terminé',
   NO_SHOW: 'Absence',
+  REFUSE: 'Refusé',
 };
 
 export function StatutBadge({ statut }) {
@@ -83,8 +85,8 @@ const STATUT_COMPTE_STYLES = {
 
 const STATUT_COMPTE_LABELS = {
   EN_ATTENTE: 'En attente',
-  APPROUVE: 'Approuve',
-  REJETE: 'Rejete',
+  APPROUVE: 'Approuvé',
+  REJETE: 'Rejeté',
 };
 
 export function StatutCompteBadge({ statut }) {
@@ -97,7 +99,7 @@ export function StatutCompteBadge({ statut }) {
 
 const ROLE_LABELS = {
   PATIENT: 'Patient',
-  MEDECIN: 'Medecin',
+  MEDECIN: 'Médecin',
   ADMIN: 'Administrateur',
   DIRECTEUR: 'Directeur',
   INFIRMIER: 'Infirmier(e)',
@@ -145,5 +147,26 @@ export function EmptyState({ icon: Icon, title, description, action }) {
       {description && <p className="text-sm text-(--color-ink-600) max-w-sm mb-4">{description}</p>}
       {action}
     </div>
+  );
+}
+
+/** Note sur 5 en etoiles (lecture seule, ou saisie si onChange est fourni). */
+export function Etoiles({ valeur = 0, onChange, taille = 16 }) {
+  return (
+    <span className="inline-flex items-center gap-0.5" aria-label={`${valeur} sur 5`}>
+      {[1, 2, 3, 4, 5].map((n) => {
+        const pleine = n <= Math.round(valeur);
+        const etoile = (
+          <svg width={taille} height={taille} viewBox="0 0 24 24" aria-hidden="true"
+            className={pleine ? 'fill-(--color-amber-400) text-(--color-amber-400)' : 'fill-transparent text-(--color-ink-300)'}>
+            <path stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"
+              d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z" />
+          </svg>
+        );
+        return onChange ? (
+          <button key={n} type="button" onClick={() => onChange(n)} className="p-0.5" aria-label={`${n} étoile${n > 1 ? 's' : ''}`}>{etoile}</button>
+        ) : <span key={n}>{etoile}</span>;
+      })}
+    </span>
   );
 }

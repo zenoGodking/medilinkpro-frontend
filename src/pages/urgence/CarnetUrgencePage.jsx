@@ -20,7 +20,7 @@ export default function CarnetUrgencePage() {
       .then((data) => !cancelled && setCarnet(data))
       .catch((err) => !cancelled && setErreur(
         err.response?.status === 403
-          ? 'Le carnet complet est reserve au personnel de sante valide.'
+          ? 'Le carnet complet est réservé au personnel de santé validé.'
           : 'Impossible de charger le carnet.',
       ));
     return () => { cancelled = true; };
@@ -33,7 +33,7 @@ export default function CarnetUrgencePage() {
   );
 
   if (erreur) {
-    return <div className="space-y-4">{retour}<EmptyState icon={Lock} title="Acces refuse" description={erreur} /></div>;
+    return <div className="space-y-4">{retour}<EmptyState icon={Lock} title="Accès refusé" description={erreur} /></div>;
   }
   if (!carnet) {
     return <div className="flex justify-center py-16"><Spinner className="w-6 h-6" /></div>;
@@ -45,7 +45,7 @@ export default function CarnetUrgencePage() {
       {retour}
       <PageHeader
         title={`${p.prenom} ${p.nom}`}
-        description="Correspondance probable issue de la reconnaissance faciale — verifiez l'identite des que possible."
+        description="Correspondance probable issue de la reconnaissance faciale — vérifiez l'identité dès que possible."
         action={(
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-(--color-petrol-50) text-(--color-petrol-600)">
             <Lock size={13} /> Lecture seule

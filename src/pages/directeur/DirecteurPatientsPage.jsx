@@ -25,11 +25,11 @@ export default function DirecteurPatientsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Patients de mes etablissements"
-        description="Patients ayant eu rendez-vous dans vos etablissements ou avec leurs medecins."
+        title="Patients de mes établissements"
+        description="Patients ayant eu rendez-vous dans vos établissements ou avec leurs médecins."
       />
       <p className="flex items-center gap-2 text-sm text-(--color-ink-600) bg-(--color-petrol-50) rounded-xl px-4 py-3 w-fit">
-        <Lock size={15} /> Les donnees medicales ne sont visibles que par les medecins.
+        <Lock size={15} /> Les données médicales ne sont visibles que par les médecins.
       </p>
 
       <div className="relative max-w-md">
@@ -39,7 +39,7 @@ export default function DirecteurPatientsPage() {
 
       {affiches.length === 0 ? (
         <Card>
-          <EmptyState icon={Users} title="Aucun patient" description="Les patients apparaitront apres leur premier rendez-vous dans un de vos etablissements." />
+          <EmptyState icon={Users} title="Aucun patient" description="Les patients apparaîtront après leur premier rendez-vous dans un de vos établissements." />
         </Card>
       ) : (
         <div className="grid sm:grid-cols-2 gap-3">

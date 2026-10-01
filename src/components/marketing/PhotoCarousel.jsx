@@ -50,7 +50,7 @@ export default function PhotoCarousel({ photos, alt, heightClassName = 'h-48 sm:
           <button
             type="button"
             onClick={() => go(-1)}
-            aria-label="Photo precedente"
+            aria-label="Photo précédente"
             className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-black/40 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
           >
             <ChevronLeft size={16} />
@@ -69,7 +69,7 @@ export default function PhotoCarousel({ photos, alt, heightClassName = 'h-48 sm:
               <button
                 key={url}
                 type="button"
-                aria-label={`Aller a la photo ${i + 1}`}
+                aria-label={`Aller à la photo ${i + 1}`}
                 onClick={() => setIndex(i)}
                 className={`h-1.5 rounded-full transition-all ${i === index ? 'w-4 bg-white' : 'w-1.5 bg-white/60'}`}
               />

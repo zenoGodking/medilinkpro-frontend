@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Stethoscope, Building2, MapPin, Search, Eye, Megaphone, ArrowLeft } from 'lucide-react';
+import { Stethoscope, Building2, MapPin, Search, Eye, Megaphone, ArrowLeft, Map as IconeCarte, LayoutGrid } from 'lucide-react';
+import CarteEtablissements from '../../components/CarteEtablissements';
 import { getPublicEtablissements } from '../../api/etablissements';
 import { getCampagnesActives } from '../../api/campagnes';
 import { Button, Spinner, EmptyState } from '../../components/ui';
@@ -11,6 +12,7 @@ export default function EtablissementsPubliquesPage() {
   const [etablissementsAvecCampagne, setEtablissementsAvecCampagne] = useState(new Set());
   const [loading, setLoading] = useState(true);
   const [recherche, setRecherche] = useState('');
+  const [vue, setVue] = useState('liste');
 
   useEffect(() => {
     (async () => {
@@ -56,18 +58,19 @@ export default function EtablissementsPubliquesPage() {
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
         <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-(--color-ink-600) hover:text-(--color-petrol-600) transition-colors mb-6">
-          <ArrowLeft size={15} /> Retour a l'accueil
+          <ArrowLeft size={15} /> Retour à l'accueil
         </Link>
 
         <h1 className="font-display font-bold text-3xl sm:text-4xl text-(--color-petrol-700)">
-          Annuaire des etablissements de sante
+          Annuaire des établissements de santé
         </h1>
         <p className="text-(--color-ink-600) mt-3 max-w-xl">
-          Parcourez librement les hopitaux et cliniques presents sur MediLinkPro.
-          Aucune inscription n'est necessaire pour consulter cet annuaire.
+          Parcourez librement les hôpitaux et cliniques présents sur MediLinkPro.
+          Aucune inscription n'est nécessaire pour consulter cet annuaire.
         </p>
 
-        <div className="relative mt-8 max-w-md">
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+        <div className="relative max-w-md flex-1 min-w-60">
           <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-(--color-ink-300)" />
           <input
             type="text"
@@ -77,12 +80,25 @@ export default function EtablissementsPubliquesPage() {
             className="w-full pl-10 pr-4 py-3 rounded-xl border border-(--color-petrol-100) bg-white text-sm focus:outline-none focus:ring-2 focus:ring-(--color-petrol-400)"
           />
         </div>
+          <div className="flex rounded-xl border border-(--color-petrol-100) bg-white p-1">
+            {[{ id: 'liste', libelle: 'Liste', icone: LayoutGrid }, { id: 'carte', libelle: 'Carte', icone: IconeCarte }].map(({ id, libelle, icone: Icone }) => (
+              <button key={id} type="button" onClick={() => setVue(id)}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold ${vue === id ? 'bg-(--color-petrol-600) text-white' : 'text-(--color-ink-600)'}`}>
+                <Icone size={15} /> {libelle}
+              </button>
+            ))}
+          </div>
+        </div>
 
         {loading ? (
           <div className="flex justify-center py-24"><Spinner className="w-7 h-7" /></div>
         ) : filtres.length === 0 ? (
           <div className="mt-10">
-            <EmptyState icon={Building2} title="Aucun etablissement trouve" description="Essayez une autre recherche." />
+            <EmptyState icon={Building2} title="Aucun établissement trouvé" description="Essayez une autre recherche." />
+          </div>
+        ) : vue === 'carte' ? (
+          <div className="mt-8">
+            <CarteEtablissements etablissements={filtres} lienDetail={(e) => `/etablissements/${e.id}`} />
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-10">

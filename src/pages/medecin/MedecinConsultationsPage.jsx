@@ -28,7 +28,6 @@ export default function MedecinConsultationsPage() {
   const [errorMsg, setErrorMsg] = useState(null);
 
   async function load() {
-    setLoading(true);
     try {
       const [data, accessibles] = await Promise.all([
         getConsultationsByMedecin(user.userId),
@@ -46,8 +45,17 @@ export default function MedecinConsultationsPage() {
   }
 
   useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    let annule = false;
+    Promise.all([getConsultationsByMedecin(user.userId), getPatientsEcritureAutorisee()])
+      .then(([data, accessibles]) => {
+        if (annule) return;
+        data.sort((a, b) => new Date(b.date) - new Date(a.date));
+        setConsultations(data);
+        setPatientsConnus(accessibles.map((p) => ({ id: p.id, nom: `${p.prenom} ${p.nom}` })));
+      })
+      .catch(() => { if (!annule) setConsultations([]); })
+      .finally(() => { if (!annule) setLoading(false); });
+    return () => { annule = true; };
   }, [user.userId]);
 
   function update(field, value) {
@@ -71,7 +79,7 @@ export default function MedecinConsultationsPage() {
       setShowForm(false);
       await load();
     } catch (err) {
-      setErrorMsg(err.response?.data?.message || 'Impossible de creer la consultation.');
+      setErrorMsg(err.response?.data?.message || 'Impossible de créer la consultation.');
     } finally {
       setSubmitting(false);
     }
@@ -108,7 +116,7 @@ export default function MedecinConsultationsPage() {
             <div>
               <FieldLabel>Patient</FieldLabel>
               <Select required value={form.patientId} onChange={(e) => update('patientId', e.target.value)}>
-                <option value="">Selectionner un de vos patients</option>
+                <option value="">Sélectionner un de vos patients</option>
                 {patientsConnus.map((p) => (
                   <option key={p.id} value={p.id}>{p.nom}</option>
                 ))}
@@ -117,7 +125,7 @@ export default function MedecinConsultationsPage() {
 
             <div>
               <FieldLabel>Motif</FieldLabel>
-              <TextInput value={form.motif} onChange={(e) => update('motif', e.target.value)} placeholder="Douleur thoracique, controle..." />
+              <TextInput value={form.motif} onChange={(e) => update('motif', e.target.value)} placeholder="Douleur thoracique, contrôle..." />
             </div>
 
             <div>
@@ -134,7 +142,7 @@ export default function MedecinConsultationsPage() {
               <FieldLabel>Type</FieldLabel>
               <Select value={form.typeConsultation} onChange={(e) => update('typeConsultation', e.target.value)}>
                 <option value="PHYSIQUE">Consultation physique</option>
-                <option value="TELECONSULTATION">Teleconsultation</option>
+                <option value="TELECONSULTATION">Téléconsultation</option>
               </Select>
             </div>
 
@@ -147,7 +155,7 @@ export default function MedecinConsultationsPage() {
 
       {consultations.length === 0 ? (
         <Card>
-          <EmptyState icon={FileText} title="Aucune consultation enregistree" description="Vos comptes rendus apparaitront ici." />
+          <EmptyState icon={FileText} title="Aucune consultation enregistrée" description="Vos comptes rendus apparaîtront ici." />
         </Card>
       ) : (
         <div className="space-y-3">

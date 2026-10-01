@@ -5,12 +5,13 @@ import { getCarnet } from '../../api/carnets';
 import { declarerDeces } from '../../api/patients';
 import { Card, Button, Spinner, PageHeader, EmptyState, FieldLabel, TextInput, Textarea } from '../../components/ui';
 import CarnetSections from '../../components/CarnetSections';
+import DocumentsMedicauxCard from '../../components/DocumentsMedicauxCard';
 import SuiviSante from '../../components/suivi/SuiviSante';
 
 const MESSAGES_NOTIFICATION = {
-  ENVOYE: 'Le proche a ete informe par SMS.',
-  NON_ENVOYE_AUCUN_FOURNISSEUR: "Le message au proche est enregistre, mais aucun service SMS n'est encore configure : il n'a pas ete envoye.",
-  ECHEC: "L'envoi du SMS au proche a echoue.",
+  ENVOYE: 'Le proche a été informé par SMS.',
+  NON_ENVOYE_AUCUN_FOURNISSEUR: "Le message au proche est enregistré, mais aucun service SMS n'est encore configuré : il n'a pas été envoyé.",
+  ECHEC: "L'envoi du SMS au proche a échoué.",
 };
 
 /**
@@ -32,7 +33,7 @@ function DeclarationDeces({ patient, onDeclare }) {
     try {
       onDeclare(await declarerDeces(patient.id, { dateDeces: form.dateDeces, circonstances: form.circonstances || null }));
     } catch (err) {
-      setErreur(err.response?.data?.message || 'La declaration a echoue.');
+      setErreur(err.response?.data?.message || 'La déclaration a échoué.');
     } finally {
       setEnvoi(false);
     }
@@ -45,7 +46,7 @@ function DeclarationDeces({ patient, onDeclare }) {
         onClick={() => setOuvert(true)}
         className="flex items-center gap-1.5 text-sm font-medium text-(--color-ink-600) hover:text-(--color-clay-500)"
       >
-        <HeartCrack size={15} /> Declarer le deces de ce patient
+        <HeartCrack size={15} /> Déclarer le décès de ce patient
       </button>
     );
   }
@@ -56,14 +57,14 @@ function DeclarationDeces({ patient, onDeclare }) {
         <div className="flex items-start gap-2 text-sm text-(--color-clay-500)">
           <AlertTriangle size={17} className="mt-0.5 shrink-0" />
           <p>
-            Cette declaration desactive le compte du patient, annule ses demandes en cours et previent son proche
-            {patient.contactUrgenceTelephone ? ` (${patient.contactUrgenceTelephone})` : ' (aucun numero renseigne)'}.
-            Elle est enregistree a votre nom.
+            Cette déclaration désactive le compte du patient, annule ses demandes en cours et prévient son proche
+            {patient.contactUrgenceTelephone ? ` (${patient.contactUrgenceTelephone})` : ' (aucun numéro renseigné)'}.
+            Elle est enregistrée à votre nom.
           </p>
         </div>
         <div className="grid sm:grid-cols-2 gap-3">
           <div>
-            <FieldLabel>Date du deces</FieldLabel>
+            <FieldLabel>Date du décès</FieldLabel>
             <TextInput type="date" required max={new Date().toISOString().slice(0, 10)} value={form.dateDeces}
               onChange={(e) => setForm((f) => ({ ...f, dateDeces: e.target.value }))} />
           </div>
@@ -79,7 +80,7 @@ function DeclarationDeces({ patient, onDeclare }) {
         {erreur && <p className="text-sm text-(--color-clay-500)">{erreur}</p>}
         <div className="flex gap-2">
           <Button type="submit" variant="danger" disabled={envoi || confirmation.trim().toLowerCase() !== nomAttendu.toLowerCase()}>
-            {envoi ? 'Enregistrement...' : 'Confirmer le deces'}
+            {envoi ? 'Enregistrement...' : 'Confirmer le décès'}
           </Button>
           <Button type="button" variant="ghost" onClick={() => setOuvert(false)}>Annuler</Button>
         </div>
@@ -115,7 +116,7 @@ export default function MedecinCarnetPage() {
       {retour}
       <PageHeader
         title={`${p.prenom} ${p.nom}`}
-        description={p.decede ? `Decede le ${new Date(p.dateDeces).toLocaleDateString('fr-FR')}` : 'Carnet medical'}
+        description={p.decede ? `Décédé le ${new Date(p.dateDeces).toLocaleDateString('fr-FR')}` : 'Carnet médical'}
         action={carnet.ecritureAutorisee ? (
           <Link to={`/medecin/consultations?patient=${p.id}`}>
             <Button variant="amber"><Plus size={16} /> Nouvelle consultation</Button>
@@ -127,10 +128,10 @@ export default function MedecinCarnetPage() {
         <div className="flex items-start gap-2 bg-(--color-petrol-50) text-(--color-petrol-700) text-sm rounded-xl px-4 py-3">
           <CheckCircle2 size={16} className="mt-0.5 shrink-0" />
           <span>
-            Deces enregistre.{' '}
+            Décès enregistré.{' '}
             {resultatDeces.procheTelephone
               ? MESSAGES_NOTIFICATION[resultatDeces.statutNotification]
-              : "Aucun numero de proche n'etait renseigne : personne n'a ete prevenu automatiquement."}
+              : "Aucun numéro de proche n'était renseigné : personne n'a été prévenu automatiquement."}
           </span>
         </div>
       )}
@@ -139,17 +140,19 @@ export default function MedecinCarnetPage() {
         <div className="flex items-center gap-2 bg-(--color-sage-100) text-(--color-sage-500) text-sm font-medium rounded-xl px-4 py-3">
           <PenLine size={16} />
           {carnet.motifEcriture === 'AUTORISATION_PATIENT'
-            ? 'Le patient vous a autorise a ecrire dans son carnet.'
-            : 'Vous avez deja suivi ce patient : vous pouvez ecrire dans son carnet.'}
+            ? 'Le patient vous a autorisé à écrire dans son carnet.'
+            : 'Vous avez déjà suivi ce patient : vous pouvez écrire dans son carnet.'}
         </div>
       ) : !p.decede && (
         <div className="flex items-center gap-2 bg-(--color-petrol-50) text-(--color-ink-600) text-sm rounded-xl px-4 py-3">
           <Lock size={16} className="shrink-0" />
-          Lecture seule : pour ecrire dans ce carnet, le patient doit vous y autoriser depuis son espace.
+          Lecture seule : pour écrire dans ce carnet, le patient doit vous y autoriser depuis son espace.
         </div>
       )}
 
       <CarnetSections carnet={carnet} />
+
+      <DocumentsMedicauxCard patientId={p.id} peutAjouter={carnet.ecritureAutorisee} />
 
       <div>
         <h2 className="font-display font-semibold text-lg text-(--color-ink-900) mb-3">Suivi (mesures, traitements, vaccins, grossesse)</h2>

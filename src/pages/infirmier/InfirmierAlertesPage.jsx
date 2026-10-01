@@ -9,6 +9,10 @@ import { useAuth } from '../../context/AuthContext';
 import { useAlerteSocket } from '../../hooks/useAlerteSocket';
 import { usePositionGps } from '../../hooks/usePositionGps';
 import NotificationsPushCard from '../../components/NotificationsPushCard';
+import NavigationInterne from '../../components/NavigationInterne';
+import PhotoInfirmier from '../../components/PhotoInfirmier';
+import { getMonProfilInfirmier } from '../../api/infirmiers';
+import { Link } from 'react-router-dom';
 import { Card, Button, Textarea, Spinner, EmptyState, PageHeader } from '../../components/ui';
 
 /** Petit bip synthetise (Web Audio API) pour signaler une nouvelle alerte sans fichier son externe. */
@@ -31,7 +35,7 @@ function jouerBip() {
 
 function tempsEcoule(dateIso) {
   const secondes = Math.floor((Date.now() - new Date(dateIso).getTime()) / 1000);
-  if (secondes < 60) return "a l'instant";
+  if (secondes < 60) return "à l'instant";
   const minutes = Math.floor(secondes / 60);
   if (minutes < 60) return `il y a ${minutes} min`;
   const heures = Math.floor(minutes / 60);
@@ -42,11 +46,6 @@ function formatDistance(km) {
   return km == null ? null : `a ${km.toLocaleString('fr-FR')} km`;
 }
 
-/** Itineraire vers le patient dans l'application de navigation de l'appareil (Google Maps). */
-function lienItineraire(a) {
-  if (a.latitude == null) return null;
-  return `https://www.google.com/maps/dir/?api=1&destination=${a.latitude},${a.longitude}`;
-}
 
 function CarteNoteMoyenne({ infirmierId }) {
   const [note, setNote] = useState(null);
@@ -78,6 +77,12 @@ export default function InfirmierAlertesPage() {
   const isFirstLoad = useRef(true);
   const occupeeRef = useRef(false);
   const token = useMemo(() => getToken(), []);
+  const [navigationVers, setNavigationVers] = useState(null);
+  const [profil, setProfil] = useState(null);
+
+  useEffect(() => {
+    getMonProfilInfirmier().then(setProfil).catch(() => setProfil(null));
+  }, []);
 
   // Une infirmiere ne peut gerer qu'une seule intervention a la fois : tant qu'elle
   // est occupee, on n'affiche/ecoute plus les nouvelles alertes EN_ATTENTE.
@@ -137,7 +142,7 @@ export default function InfirmierAlertesPage() {
     setMesInterventions((prev) => {
       const etaitLaMienne = prev.some((a) => a.id === alerte.id);
       if (etaitLaMienne && alerte.statut === 'TERMINEE' && alerte.note) {
-        setConfirmation(`Le patient a note votre intervention : ${alerte.note}/5${alerte.commentaire ? ` - "${alerte.commentaire}"` : ''}`);
+        setConfirmation(`Le patient a noté votre intervention : ${alerte.note}/5${alerte.commentaire ? ` - "${alerte.commentaire}"` : ''}`);
         setTimeout(() => setConfirmation(null), 6000);
       }
       const suivante = prev.filter((a) => a.id !== alerte.id);
@@ -186,7 +191,7 @@ export default function InfirmierAlertesPage() {
         setErreur(err.response?.data?.message || "Cette alerte n'est plus disponible.");
         chargerAlertesActives();
       } else {
-        setErreur('Impossible de repondre a cette alerte pour le moment.');
+        setErreur('Impossible de répondre à cette alerte pour le moment.');
       }
     } finally {
       setEnCoursId(null);
@@ -201,7 +206,7 @@ export default function InfirmierAlertesPage() {
       setMesInterventions((prev) => prev.filter((a) => a.id !== alerteId));
       chargerAlertesActives();
     } catch {
-      setErreur("Impossible de vous retracter de cette intervention pour le moment.");
+      setErreur("Impossible de vous rétracter de cette intervention pour le moment.");
     } finally {
       setEnCoursId(null);
       setRetractionId(null);
@@ -221,7 +226,7 @@ export default function InfirmierAlertesPage() {
         delete suite[alerteId];
         return suite;
       });
-      setConfirmation('Compte-rendu envoye. Vous etes de nouveau disponible pour une nouvelle alerte.');
+      setConfirmation('Compte-rendu envoyé. Vous êtes de nouveau disponible pour une nouvelle alerte.');
       setTimeout(() => setConfirmation(null), 5000);
       chargerAlertesActives();
     } catch {
@@ -236,8 +241,8 @@ export default function InfirmierAlertesPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Alertes de soins a domicile"
-        description="Les demandes des patients proches de vous apparaissent ici en temps reel. Gardez cette page ouverte."
+        title="Alertes de soins à domicile"
+        description="Les demandes des patients proches de vous apparaissent ici en temps réel. Gardez cette page ouverte."
         action={
           <div className="flex items-center gap-2 flex-wrap">
             <span
@@ -246,7 +251,7 @@ export default function InfirmierAlertesPage() {
               }`}
             >
               {position ? <LocateFixed size={13} /> : <LocateOff size={13} />}
-              {position ? 'Position partagee' : 'Position inconnue'}
+              {position ? 'Position partagée' : 'Position inconnue'}
             </span>
             <CarteNoteMoyenne infirmierId={user.userId} />
             <span
@@ -255,17 +260,28 @@ export default function InfirmierAlertesPage() {
               }`}
             >
               {connected ? <Wifi size={13} /> : <WifiOff size={13} />}
-              {connected ? 'Connecte' : 'Connexion...'}
+              {connected ? 'Connecté' : 'Connexion...'}
             </span>
           </div>
         }
       />
 
-      <NotificationsPushCard raison="Recevez les demandes de soins proches de vous meme ecran eteint ou application fermee." />
+      {profil && !profil.photoDisponible && (
+        <div className="flex items-center gap-4 bg-(--color-amber-400)/15 border border-(--color-amber-400)/40 rounded-2xl px-4 py-3">
+          <PhotoInfirmier infirmierId={user.userId} disponible={false} className="w-12 h-12" />
+          <div className="flex-1 text-sm text-(--color-ink-900)">
+            <p className="font-semibold">Ajoutez votre photo de profil</p>
+            <p className="text-(--color-ink-600)">Elle est obligatoire pour accepter une alerte : le patient doit savoir qui va venir chez lui.</p>
+          </div>
+          <Link to="/infirmier/profil"><Button variant="amber">Ajouter</Button></Link>
+        </div>
+      )}
+
+      <NotificationsPushCard raison="Recevez les demandes de soins proches de vous même écran éteint ou application fermée." />
 
       {erreurGps && (
         <div className="flex items-center gap-2 bg-(--color-amber-400)/20 text-(--color-amber-500) text-sm font-medium rounded-xl px-4 py-3">
-          <LocateOff size={16} /> {erreurGps} Sans position, vous ne recevez que les alertes diffusees a toutes les infirmieres.
+          <LocateOff size={16} /> {erreurGps} Sans position, vous ne recevez que les alertes diffusées à toutes les infirmières.
         </div>
       )}
 
@@ -312,15 +328,17 @@ export default function InfirmierAlertesPage() {
                       )}
                     </div>
 
-                    {lienItineraire(a) && (
-                      <a href={lienItineraire(a)} target="_blank" rel="noreferrer" className="block mt-4">
-                        <Button variant="primary" className="w-full">
-                          <Navigation size={15} /> Itineraire vers le patient
-                        </Button>
-                      </a>
+                    {a.latitude != null ? (
+                      <Button variant="primary" className="w-full mt-4" onClick={() => setNavigationVers(a)}>
+                        <Navigation size={15} /> Itinéraire vers le patient
+                      </Button>
+                    ) : (
+                      <p className="mt-4 text-xs text-(--color-ink-600) bg-(--color-petrol-50) rounded-xl px-3 py-2">
+                        Le patient n'a pas partagé sa position : rendez-vous à l'adresse indiquée ou appelez-le.
+                      </p>
                     )}
                     <p className="mt-2 text-xs text-(--color-ink-600)">
-                      Le patient suit votre position en temps reel tant que cette page reste ouverte.
+                      Le patient suit votre position en temps réel tant que cette page reste ouverte.
                     </p>
 
                     <div className="mt-4 pt-4 border-t border-(--color-petrol-100) space-y-2">
@@ -329,7 +347,7 @@ export default function InfirmierAlertesPage() {
                       </label>
                       <Textarea
                         rows={3}
-                        placeholder="Decrivez le soin apporte, l'etat du patient, les recommandations..."
+                        placeholder="Décrivez le soin apporté, l'état du patient, les recommandations..."
                         value={compteRendus[a.id] || ''}
                         onChange={(e) => setCompteRendus((prev) => ({ ...prev, [a.id]: e.target.value }))}
                       />
@@ -340,13 +358,13 @@ export default function InfirmierAlertesPage() {
                         onClick={() => handleEnvoyerCompteRendu(a.id)}
                       >
                         <Send size={15} />
-                        {enCoursId === a.id ? 'Envoi...' : 'Envoyer le compte-rendu et cloturer'}
+                        {enCoursId === a.id ? 'Envoi...' : 'Envoyer le compte-rendu et clôturer'}
                       </Button>
                     </div>
 
                     {retractionId === a.id ? (
                       <div className="mt-3 flex items-center gap-2">
-                        <p className="text-xs text-(--color-ink-600) flex-1">Confirmer la retractation ?</p>
+                        <p className="text-xs text-(--color-ink-600) flex-1">Confirmer la rétractation ?</p>
                         <Button variant="ghost" className="!px-3 !py-1.5" onClick={() => setRetractionId(null)}>
                           Non
                         </Button>
@@ -356,7 +374,7 @@ export default function InfirmierAlertesPage() {
                           disabled={enCoursId === a.id}
                           onClick={() => handleRetracter(a.id)}
                         >
-                          Oui, me retracter
+                          Oui, me rétracter
                         </Button>
                       </div>
                     ) : (
@@ -365,7 +383,7 @@ export default function InfirmierAlertesPage() {
                         onClick={() => setRetractionId(a.id)}
                         className="w-full mt-3 flex items-center justify-center gap-1.5 text-xs text-(--color-ink-300) hover:text-(--color-clay-500) transition-colors"
                       >
-                        <UndoDot size={13} /> Un imprevu ? Me retracter sans compte-rendu
+                        <UndoDot size={13} /> Un imprévu ? Me rétracter sans compte-rendu
                       </button>
                     )}
                   </Card>
@@ -379,8 +397,8 @@ export default function InfirmierAlertesPage() {
               <Card className="p-6 flex items-center gap-3 bg-(--color-petrol-50)/50 border-dashed">
                 <Lock size={18} className="text-(--color-petrol-400) shrink-0" />
                 <p className="text-sm text-(--color-ink-600)">
-                  Vous etes en intervention. Les nouvelles alertes vous seront proposees
-                  des que vous aurez envoye votre compte-rendu.
+                  Vous êtes en intervention. Les nouvelles alertes vous seront proposées
+                  dès que vous aurez envoyé votre compte-rendu.
                 </p>
               </Card>
             ) : alertesEnAttente.length === 0 ? (
@@ -388,7 +406,7 @@ export default function InfirmierAlertesPage() {
                 <EmptyState
                   icon={BellRing}
                   title="Aucune alerte en attente"
-                  description="Vous serez notifiee instantanement des qu'un patient envoie une demande de soins a domicile."
+                  description="Vous serez notifiée instantanément dès qu'un patient envoie une demande de soins à domicile."
                 />
               </Card>
             ) : (
@@ -430,7 +448,7 @@ export default function InfirmierAlertesPage() {
                       disabled={enCoursId === a.id}
                       onClick={() => handleRepondre(a.id)}
                     >
-                      {enCoursId === a.id ? 'Envoi...' : 'Je suis disponible - Repondre present'}
+                      {enCoursId === a.id ? 'Envoi...' : 'Je suis disponible - Répondre présent'}
                     </Button>
                   </Card>
                 ))}
@@ -438,6 +456,15 @@ export default function InfirmierAlertesPage() {
             )}
           </div>
         </>
+      )}
+
+      {navigationVers && (
+        <NavigationInterne
+          destination={{ latitude: navigationVers.latitude, longitude: navigationVers.longitude }}
+          libelle={`${navigationVers.patientPrenom} ${navigationVers.patientNom} · ${navigationVers.adresse}`}
+          telephone={navigationVers.patientTelephone}
+          onFermer={() => setNavigationVers(null)}
+        />
       )}
     </div>
   );

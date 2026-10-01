@@ -52,7 +52,7 @@ export default function InfosUrgenceCard({ patientId }) {
             <Siren size={18} className="text-(--color-clay-500)" /> Informations d'urgence
           </h2>
           <p className="text-sm text-(--color-ink-600) mt-0.5">
-            Visibles par toute personne qui vous retrouve accidente (via votre photo). N'y mettez que ce qui aide les secours.
+            Visibles par toute personne qui vous retrouve accidenté (via votre photo). N'y mettez que ce qui aide les secours.
           </p>
         </div>
         {!form && <Button variant="ghost" onClick={editer}><Pencil size={15} /> Modifier</Button>}
@@ -70,21 +70,21 @@ export default function InfosUrgenceCard({ patientId }) {
             </div>
             <div>
               <FieldLabel>Allergies</FieldLabel>
-              <TextInput value={form.allergies} placeholder="Penicilline, arachides..." onChange={(e) => setForm((f) => ({ ...f, allergies: e.target.value }))} />
+              <TextInput value={form.allergies} placeholder="Pénicilline, arachides..." onChange={(e) => setForm((f) => ({ ...f, allergies: e.target.value }))} />
             </div>
           </div>
           <div>
-            <FieldLabel>A signaler aux secours</FieldLabel>
-            <TextInput value={form.conditionsUrgence} placeholder="Asthme, diabete, epilepsie, pacemaker, grossesse..."
+            <FieldLabel>À signaler aux secours</FieldLabel>
+            <TextInput value={form.conditionsUrgence} placeholder="Asthme, diabète, épilepsie, pacemaker, grossesse..."
               onChange={(e) => setForm((f) => ({ ...f, conditionsUrgence: e.target.value }))} />
           </div>
           <div className="grid sm:grid-cols-2 gap-3">
             <div>
-              <FieldLabel>Proche a prevenir (nom)</FieldLabel>
+              <FieldLabel>Proche à prévenir (nom)</FieldLabel>
               <TextInput value={form.contactUrgenceNom} onChange={(e) => setForm((f) => ({ ...f, contactUrgenceNom: e.target.value }))} />
             </div>
             <div>
-              <FieldLabel>Proche a prevenir (telephone)</FieldLabel>
+              <FieldLabel>Proche à prévenir (téléphone)</FieldLabel>
               <TextInput type="tel" value={form.contactUrgenceTelephone} placeholder="+237 6XX XXX XXX"
                 onChange={(e) => setForm((f) => ({ ...f, contactUrgenceTelephone: e.target.value }))} />
             </div>
@@ -98,14 +98,14 @@ export default function InfosUrgenceCard({ patientId }) {
       ) : (
         <dl className="mt-4 grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
           <div><dt className="text-(--color-ink-600)">Groupe sanguin</dt><dd className="font-semibold">{libelleGroupeSanguin(patient.groupeSanguin)}</dd></div>
-          <div><dt className="text-(--color-ink-600)">Allergies</dt><dd className="font-semibold">{patient.allergies || 'Aucune declaree'}</dd></div>
-          <div className="sm:col-span-2"><dt className="text-(--color-ink-600)">A signaler aux secours</dt><dd className="font-semibold">{patient.conditionsUrgence || 'Rien de renseigne'}</dd></div>
+          <div><dt className="text-(--color-ink-600)">Allergies</dt><dd className="font-semibold">{patient.allergies || 'Aucune déclarée'}</dd></div>
+          <div className="sm:col-span-2"><dt className="text-(--color-ink-600)">À signaler aux secours</dt><dd className="font-semibold">{patient.conditionsUrgence || 'Rien de renseigné'}</dd></div>
           <div className="sm:col-span-2">
-            <dt className="text-(--color-ink-600)">Proche a prevenir</dt>
+            <dt className="text-(--color-ink-600)">Proche à prévenir</dt>
             <dd className="font-semibold">
               {patient.contactUrgenceTelephone
                 ? `${patient.contactUrgenceNom ? `${patient.contactUrgenceNom} — ` : ''}${patient.contactUrgenceTelephone}`
-                : 'Aucun — ajoutez-en un pour qu\'il soit prevenu en cas d\'accident'}
+                : 'Aucun — ajoutez-en un pour qu\'il soit prévenu en cas d\'accident'}
             </dd>
           </div>
         </dl>

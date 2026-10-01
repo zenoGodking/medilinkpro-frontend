@@ -48,11 +48,11 @@ export default function DashboardPage() {
         <h1 className="font-display font-bold text-2xl sm:text-3xl text-(--color-petrol-700)">
           Bonjour {user?.prenom} 👋
         </h1>
-        <p className="text-(--color-ink-600) mt-1">Voici un apercu de votre suivi medical.</p>
+        <p className="text-(--color-ink-600) mt-1">Voici un aperçu de votre suivi médical.</p>
       </div>
 
       <PhotoFacialeCard />
-      <NotificationsPushCard raison="Soyez prevenu quand une infirmiere arrive et a l'heure de vos medicaments." />
+      <NotificationsPushCard raison="Soyez prévenu quand une infirmière arrive et à l'heure de vos médicaments." />
 
       {/* Signature : carte "prochain rendez-vous" en evidence */}
       {loading ? (
@@ -101,11 +101,11 @@ export default function DashboardPage() {
         <Card>
           <EmptyState
             icon={CalendarHeart}
-            title="Aucun rendez-vous a venir"
-            description="Trouvez un specialiste pres de chez vous et prenez rendez-vous en quelques clics."
+            title="Aucun rendez-vous à venir"
+            description="Trouvez un spécialiste près de chez vous et prenez rendez-vous en quelques clics."
             action={
               <Link to="/patient/recherche">
-                <Button variant="amber">Trouver un specialiste</Button>
+                <Button variant="amber">Trouver un spécialiste</Button>
               </Link>
             }
           />
@@ -119,8 +119,8 @@ export default function DashboardPage() {
             <div className="w-9 h-9 rounded-lg bg-(--color-sage-100) flex items-center justify-center mb-3">
               <FileHeart size={18} className="text-(--color-sage-500)" />
             </div>
-            <h3 className="font-display font-semibold text-(--color-ink-900)">Mon dossier medical</h3>
-            <p className="text-sm text-(--color-ink-600) mt-1">Consultations, ordonnances et resultats.</p>
+            <h3 className="font-display font-semibold text-(--color-ink-900)">Mon dossier médical</h3>
+            <p className="text-sm text-(--color-ink-600) mt-1">Consultations, ordonnances et résultats.</p>
           </Card>
         </Link>
 
@@ -129,8 +129,8 @@ export default function DashboardPage() {
             <div className="w-9 h-9 rounded-lg bg-(--color-amber-400)/20 flex items-center justify-center mb-3">
               <MapPinned size={18} className="text-(--color-amber-500)" />
             </div>
-            <h3 className="font-display font-semibold text-(--color-ink-900)">Trouver un specialiste</h3>
-            <p className="text-sm text-(--color-ink-600) mt-1">Recherchez par specialite et proximite.</p>
+            <h3 className="font-display font-semibold text-(--color-ink-900)">Trouver un spécialiste</h3>
+            <p className="text-sm text-(--color-ink-600) mt-1">Recherchez par spécialité et proximité.</p>
           </Card>
         </Link>
 
@@ -141,7 +141,7 @@ export default function DashboardPage() {
             </div>
             <h3 className="font-display font-semibold text-(--color-ink-900)">Mes rendez-vous</h3>
             <p className="text-sm text-(--color-ink-600) mt-1">
-              {aVenir.length > 0 ? `${aVenir.length} a venir` : 'Aucun rendez-vous planifie'}
+              {aVenir.length > 0 ? `${aVenir.length} à venir` : 'Aucun rendez-vous planifié'}
             </p>
           </Card>
         </Link>

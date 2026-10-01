@@ -26,11 +26,11 @@ export default function DirecteurMedecinsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Medecins" description="Les medecins rattaches a votre reseau." />
+      <PageHeader title="Médecins" description="Les médecins rattachés à votre réseau." />
 
       {medecins.length === 0 ? (
         <Card>
-          <EmptyState icon={Stethoscope} title="Aucun medecin" description="Les medecins inscrits apparaitront ici." />
+          <EmptyState icon={Stethoscope} title="Aucun médecin" description="Les médecins inscrits apparaîtront ici." />
         </Card>
       ) : (
         <div className="grid sm:grid-cols-2 gap-4">
@@ -39,11 +39,11 @@ export default function DirecteurMedecinsPage() {
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <p className="font-display font-semibold text-(--color-ink-900)">Dr {m.prenom} {m.nom}</p>
-                  <p className="text-sm text-(--color-amber-500) font-medium">{m.specialite || 'Generaliste'}</p>
+                  <p className="text-sm text-(--color-amber-500) font-medium">{m.specialite || 'Généraliste'}</p>
                 </div>
                 {m.verifie && (
                   <span className="flex items-center gap-1 text-xs font-semibold text-(--color-sage-500) bg-(--color-sage-100) px-2 py-1 rounded-full shrink-0">
-                    <BadgeCheck size={13} /> Verifie
+                    <BadgeCheck size={13} /> Vérifié
                   </span>
                 )}
               </div>

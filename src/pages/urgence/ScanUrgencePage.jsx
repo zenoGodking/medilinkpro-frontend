@@ -9,7 +9,7 @@ import { rechercherParVisage } from '../../api/reconnaissanceFaciale';
 import { libelleGroupeSanguin } from '../../utils/groupeSanguin';
 
 const NIVEAU_STYLES = {
-  ELEVEE: { label: 'Confiance elevee', classe: 'bg-(--color-sage-100) text-(--color-sage-500)', barre: 'bg-(--color-sage-500)' },
+  ELEVEE: { label: 'Confiance élevée', classe: 'bg-(--color-sage-100) text-(--color-sage-500)', barre: 'bg-(--color-sage-500)' },
   MOYENNE: { label: 'Confiance moyenne', classe: 'bg-(--color-amber-400)/20 text-(--color-amber-500)', barre: 'bg-(--color-amber-400)' },
   FAIBLE: { label: 'Confiance faible', classe: 'bg-(--color-clay-100) text-(--color-clay-500)', barre: 'bg-(--color-clay-500)' },
 };
@@ -39,16 +39,16 @@ function CandidatCard({ candidat, photoScannee, carnetAccessible }) {
 
       <div className="flex gap-3 mb-4">
         <figure className="flex-1 text-center">
-          <img src={photoScannee} alt="Photo scannee" className="w-full aspect-square object-cover rounded-xl border border-(--color-petrol-100)" />
-          <figcaption className="text-xs text-(--color-ink-600) mt-1">Photo scannee</figcaption>
+          <img src={photoScannee} alt="Photo scannée" className="w-full aspect-square object-cover rounded-xl border border-(--color-petrol-100)" />
+          <figcaption className="text-xs text-(--color-ink-600) mt-1">Photo scannée</figcaption>
         </figure>
         <figure className="flex-1 text-center">
           {candidat.photoReference ? (
-            <img src={candidat.photoReference} alt="Photo de reference" className="w-full aspect-square object-cover rounded-xl border border-(--color-petrol-100)" />
+            <img src={candidat.photoReference} alt="Photo de référence" className="w-full aspect-square object-cover rounded-xl border border-(--color-petrol-100)" />
           ) : (
             <div className="w-full aspect-square rounded-xl bg-(--color-petrol-50)" />
           )}
-          <figcaption className="text-xs text-(--color-ink-600) mt-1">Photo a l'inscription</figcaption>
+          <figcaption className="text-xs text-(--color-ink-600) mt-1">Photo à l'inscription</figcaption>
         </figure>
       </div>
 
@@ -79,13 +79,13 @@ function CandidatCard({ candidat, photoScannee, carnetAccessible }) {
 
           {candidat.decede && (
             <p className="text-sm font-semibold text-(--color-ink-600) bg-(--color-petrol-50) rounded-xl px-3 py-2">
-              Cette personne est declaree decedee.
+              Cette personne est déclarée décédée.
             </p>
           )}
 
           {candidat.conditionsUrgence && (
             <div className="rounded-xl bg-(--color-clay-100) p-3">
-              <p className="flex items-center gap-1 text-xs font-semibold text-(--color-clay-500)"><Activity size={13} /> A signaler aux secours</p>
+              <p className="flex items-center gap-1 text-xs font-semibold text-(--color-clay-500)"><Activity size={13} /> À signaler aux secours</p>
               <p className="text-sm font-semibold text-(--color-petrol-700) mt-1">{candidat.conditionsUrgence}</p>
             </div>
           )}
@@ -94,11 +94,11 @@ function CandidatCard({ candidat, photoScannee, carnetAccessible }) {
             <div className="rounded-xl bg-(--color-clay-100) p-3">
               <p className="flex items-center gap-1 text-xs font-semibold text-(--color-clay-500)"><Droplet size={13} /> Groupe sanguin</p>
               <p className="font-display font-bold text-2xl text-(--color-clay-500)">{libelleGroupeSanguin(candidat.groupeSanguin)}</p>
-              <p className="text-[11px] text-(--color-clay-500)">A confirmer avant transfusion</p>
+              <p className="text-[11px] text-(--color-clay-500)">À confirmer avant transfusion</p>
             </div>
             <div className="rounded-xl bg-(--color-amber-400)/15 p-3">
               <p className="flex items-center gap-1 text-xs font-semibold text-(--color-amber-500)"><ShieldAlert size={13} /> Allergies</p>
-              <p className="text-sm font-semibold text-(--color-petrol-700) mt-1">{candidat.allergies || 'Aucune declaree'}</p>
+              <p className="text-sm font-semibold text-(--color-petrol-700) mt-1">{candidat.allergies || 'Aucune déclarée'}</p>
             </div>
           </div>
 
@@ -114,13 +114,13 @@ function CandidatCard({ candidat, photoScannee, carnetAccessible }) {
               <Phone size={20} />
             </a>
           ) : (
-            <p className="text-sm text-(--color-ink-600)">Aucun contact d'urgence renseigne.</p>
+            <p className="text-sm text-(--color-ink-600)">Aucun contact d'urgence renseigné.</p>
           )}
 
           {carnetAccessible && (
             <Link to={`/urgence/carnet/${candidat.patientId}`} className="block">
               <Button variant="ghost" className="w-full border border-(--color-petrol-100)">
-                <FileHeart size={16} /> Carnet medical complet (lecture seule) <ArrowRight size={15} />
+                <FileHeart size={16} /> Carnet médical complet (lecture seule) <ArrowRight size={15} />
               </Button>
             </Link>
           )}
@@ -151,7 +151,7 @@ export default function ScanUrgencePage() {
     try {
       setResultat(await rechercherParVisage(visage.descripteur));
     } catch (err) {
-      setErreur(err.response?.data?.message || 'La recherche a echoue. Reessayez.');
+      setErreur(err.response?.data?.message || 'La recherche a échoué. Réessayez.');
     } finally {
       setRecherche(false);
     }
@@ -161,20 +161,20 @@ export default function ScanUrgencePage() {
     <div className="space-y-6 max-w-3xl">
       <PageHeader
         title="Identification d'urgence"
-        description="Scannez le visage d'une personne accidentee pour retrouver les informations utiles aux secours."
+        description="Scannez le visage d'une personne accidentée pour retrouver les informations utiles aux secours."
       />
 
       <div className="flex items-start gap-2 bg-(--color-amber-400)/15 text-(--color-amber-500) text-sm rounded-xl px-4 py-3">
         <AlertTriangle size={17} className="mt-0.5 shrink-0" />
         <span>
-          La reconnaissance faciale n'est pas fiable a 100 %. Les resultats sont des <strong>correspondances probables</strong>,
-          jamais une identification certaine. Appelez d'abord les secours si ce n'est pas deja fait.
+          La reconnaissance faciale n'est pas fiable à 100 %. Les résultats sont des <strong>correspondances probables</strong>,
+          jamais une identification certaine. Appelez d'abord les secours si ce n'est pas déjà fait.
         </span>
       </div>
 
       <p className="text-sm text-(--color-ink-600)">
-        La personne a une <strong>carte d'urgence</strong> (QR code sur son ecran verrouille ou dans son portefeuille) ?
-        Scannez-la simplement avec l'appareil photo de votre telephone : c'est plus fiable que la reconnaissance faciale.
+        La personne a une <strong>carte d'urgence</strong> (QR code sur son écran verrouillé ou dans son portefeuille) ?
+        Scannez-la simplement avec l'appareil photo de votre téléphone : c'est plus fiable que la reconnaissance faciale.
       </p>
 
       <Card className="p-5 space-y-4">
@@ -204,7 +204,7 @@ export default function ScanUrgencePage() {
             {resultat.ambigu && (
               <div className="flex items-start gap-2 bg-(--color-clay-100) text-(--color-clay-500) text-sm rounded-xl px-4 py-3">
                 <AlertTriangle size={17} className="mt-0.5 shrink-0" />
-                <span>Plusieurs personnes ressemblent autant au visage scanne : impossible de les departager avec certitude.</span>
+                <span>Plusieurs personnes ressemblent autant au visage scanné : impossible de les départager avec certitude.</span>
               </div>
             )}
             {resultat.candidats.map((c) => (

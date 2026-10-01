@@ -25,7 +25,7 @@ export default function OngletVaccins({ patientId, estPatient, peutEcrire }) {
       setForm(VIDE);
       charger();
     } catch (err) {
-      setErreur(err.response?.data?.message || "Le vaccin n'a pas pu etre enregistre.");
+      setErreur(err.response?.data?.message || "Le vaccin n'a pas pu être enregistré.");
     }
   }
 
@@ -35,7 +35,7 @@ export default function OngletVaccins({ patientId, estPatient, peutEcrire }) {
   return (
     <div className="space-y-4">
       {vaccins.length === 0 ? (
-        <p className="text-sm text-(--color-ink-600)">Aucun vaccin enregistre.</p>
+        <p className="text-sm text-(--color-ink-600)">Aucun vaccin enregistré.</p>
       ) : (
         <ul className="divide-y divide-(--color-petrol-100)">
           {vaccins.map((v) => (
@@ -49,10 +49,10 @@ export default function OngletVaccins({ patientId, estPatient, peutEcrire }) {
               </div>
               {v.statut === 'VALIDEE' ? (
                 <span className="inline-flex items-center gap-1 text-xs font-semibold text-(--color-sage-500)">
-                  <BadgeCheck size={14} /> Valide{v.valideParNom && ` par ${v.valideParNom}`}
+                  <BadgeCheck size={14} /> Validé{v.valideParNom && ` par ${v.valideParNom}`}
                 </span>
               ) : (
-                <span className="text-xs font-semibold text-(--color-ink-600)">Declare par le patient</span>
+                <span className="text-xs font-semibold text-(--color-ink-600)">Déclaré par le patient</span>
               )}
               {v.statut === 'DECLAREE' && medecinAutorise && (
                 <Button variant="ghost" className="!px-3 !py-1.5" onClick={() => validerVaccination(v.id).then(charger)}>Valider</Button>
@@ -71,15 +71,15 @@ export default function OngletVaccins({ patientId, estPatient, peutEcrire }) {
       {peutEcrire && (
         <form onSubmit={enregistrer} className="rounded-xl bg-(--color-petrol-50) p-4 space-y-3">
           <p className="text-sm text-(--color-ink-600)">
-            {estPatient ? 'Recopiez un vaccin de votre carnet papier : il sera marque « declare » jusqu\'a validation par un medecin.'
-              : 'Vaccin saisi par vous : il sera marque « valide ».'}
+            {estPatient ? 'Recopiez un vaccin de votre carnet papier : il sera marque « declare » jusqu\'a validation par un médecin.'
+              : 'Vaccin saisi par vous : il sera marqué « validé ».'}
           </p>
           <div className="grid sm:grid-cols-3 gap-3">
-            <div><FieldLabel>Vaccin</FieldLabel><TextInput required value={form.vaccin} placeholder="Fievre jaune, Hepatite B..." onChange={(e) => setForm((f) => ({ ...f, vaccin: e.target.value }))} /></div>
+            <div><FieldLabel>Vaccin</FieldLabel><TextInput required value={form.vaccin} placeholder="Fièvre jaune, Hépatite B..." onChange={(e) => setForm((f) => ({ ...f, vaccin: e.target.value }))} /></div>
             <div><FieldLabel>Dose</FieldLabel><TextInput value={form.dose} placeholder="1re dose, rappel" onChange={(e) => setForm((f) => ({ ...f, dose: e.target.value }))} /></div>
             <div><FieldLabel>Date</FieldLabel><TextInput type="date" required max={new Date().toISOString().slice(0, 10)} value={form.dateVaccination} onChange={(e) => setForm((f) => ({ ...f, dateVaccination: e.target.value }))} /></div>
             <div><FieldLabel>Lieu</FieldLabel><TextInput value={form.lieu} onChange={(e) => setForm((f) => ({ ...f, lieu: e.target.value }))} /></div>
-            <div><FieldLabel>Numero de lot</FieldLabel><TextInput value={form.lot} onChange={(e) => setForm((f) => ({ ...f, lot: e.target.value }))} /></div>
+            <div><FieldLabel>Numéro de lot</FieldLabel><TextInput value={form.lot} onChange={(e) => setForm((f) => ({ ...f, lot: e.target.value }))} /></div>
           </div>
           {erreur && <p className="text-sm text-(--color-clay-500)">{erreur}</p>}
           <Button type="submit"><Plus size={15} /> Ajouter le vaccin</Button>

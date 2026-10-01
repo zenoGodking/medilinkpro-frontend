@@ -60,13 +60,13 @@ export default function EtablissementDetailPage() {
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
         <Link to="/etablissements" className="inline-flex items-center gap-1.5 text-sm text-(--color-ink-600) hover:text-(--color-petrol-600) transition-colors mb-6">
-          <ArrowLeft size={15} /> Retour a l'annuaire
+          <ArrowLeft size={15} /> Retour à l'annuaire
         </Link>
 
         {loading ? (
           <div className="flex justify-center py-24"><Spinner className="w-7 h-7" /></div>
         ) : introuvable || !etablissement ? (
-          <EmptyState icon={Building2} title="Etablissement introuvable" description="Ce lien n'est plus valide ou l'etablissement a ete supprime." />
+          <EmptyState icon={Building2} title="Établissement introuvable" description="Ce lien n'est plus valide ou l'établissement a été supprimé." />
         ) : (
           <div className="bg-white rounded-2xl border border-(--color-petrol-100) overflow-hidden">
             {etablissement.photos?.length > 0 ? (

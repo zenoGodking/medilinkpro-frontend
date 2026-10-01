@@ -28,7 +28,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-(--color-ivory) flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-(--color-ink-600) font-medium mb-6 hover:text-(--color-petrol-600) transition-colors">
-          <ArrowLeft size={15} /> Retour a l'accueil
+          <ArrowLeft size={15} /> Retour à l'accueil
         </Link>
 
         <div className="flex flex-col items-center mb-8">
@@ -36,7 +36,7 @@ export default function LoginPage() {
             <Stethoscope size={24} strokeWidth={2} />
           </div>
           <h1 className="font-display font-bold text-2xl text-(--color-petrol-700)">MediLinkPro</h1>
-          <p className="text-sm text-(--color-ink-600) mt-1">Votre suivi medical, simplifie.</p>
+          <p className="text-sm text-(--color-ink-600) mt-1">Votre suivi médical, simplifié.</p>
         </div>
 
         <div className="bg-white rounded-2xl border border-(--color-petrol-100) shadow-sm p-6">
@@ -61,7 +61,12 @@ export default function LoginPage() {
               />
             </div>
             <div>
-              <FieldLabel>Mot de passe</FieldLabel>
+              <div className="flex items-center justify-between">
+                <FieldLabel>Mot de passe</FieldLabel>
+                <Link to="/mot-de-passe-oublie" className="text-xs font-medium text-(--color-petrol-600) hover:underline mb-1.5">
+                  Mot de passe oublié ?
+                </Link>
+              </div>
               <TextInput
                 type="password"
                 required
@@ -79,7 +84,7 @@ export default function LoginPage() {
         <p className="text-center text-sm text-(--color-ink-600) mt-5">
           Pas encore de compte ?{' '}
           <Link to="/inscription" className="font-semibold text-(--color-petrol-600) hover:underline">
-            Creer un compte
+            Créer un compte
           </Link>
         </p>
       </div>

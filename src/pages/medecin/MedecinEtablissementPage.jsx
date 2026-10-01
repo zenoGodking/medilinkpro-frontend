@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Building2, Check, X, Send, Clock, Search } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { getMedecin } from '../../api/medecins';
@@ -8,8 +8,8 @@ import { Card, Button, Spinner, EmptyState, PageHeader, TextInput } from '../../
 
 const STATUT_LABELS = {
   EN_ATTENTE: { label: 'En attente', className: 'bg-(--color-amber-400)/20 text-(--color-amber-500)' },
-  ACCEPTEE: { label: 'Acceptee', className: 'bg-(--color-sage-100) text-(--color-sage-500)' },
-  REFUSEE: { label: 'Refusee', className: 'bg-(--color-clay-100) text-(--color-clay-500)' },
+  ACCEPTEE: { label: 'Acceptée', className: 'bg-(--color-sage-100) text-(--color-sage-500)' },
+  REFUSEE: { label: 'Refusée', className: 'bg-(--color-clay-100) text-(--color-clay-500)' },
 };
 
 export default function MedecinEtablissementPage() {
@@ -22,8 +22,7 @@ export default function MedecinEtablissementPage() {
   const [enCoursId, setEnCoursId] = useState(null);
   const [erreur, setErreur] = useState(null);
 
-  async function charger() {
-    setLoading(true);
+  const charger = useCallback(async () => {
     try {
       const [m, d, etabs] = await Promise.all([
         getMedecin(user.userId),
@@ -36,9 +35,9 @@ export default function MedecinEtablissementPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [user.userId]);
 
-  useEffect(() => { charger(); }, [user.userId]);
+  useEffect(() => { charger(); }, [charger]);
 
   const invitationsEnAttente = demandes.filter((d) => d.initiateur === 'ETABLISSEMENT' && d.statut === 'EN_ATTENTE');
   const historique = demandes.filter((d) => !(d.initiateur === 'ETABLISSEMENT' && d.statut === 'EN_ATTENTE'));
@@ -50,7 +49,7 @@ export default function MedecinEtablissementPage() {
       await repondreDemandeIntegration(demandeId, user.userId, { accepter });
       await charger();
     } catch {
-      setErreur('Impossible de repondre a cette invitation pour le moment.');
+      setErreur('Impossible de répondre à cette invitation pour le moment.');
     } finally {
       setEnCoursId(null);
     }
@@ -80,8 +79,8 @@ export default function MedecinEtablissementPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Mon etablissement"
-        description="Rejoignez un etablissement, ou repondez aux invitations que vous recevez."
+        title="Mon établissement"
+        description="Rejoignez un établissement, ou répondez aux invitations que vous recevez."
       />
 
       {erreur && (
@@ -95,16 +94,16 @@ export default function MedecinEtablissementPage() {
           <Building2 size={20} className="text-(--color-petrol-600)" />
         </div>
         <div>
-          <p className="text-xs text-(--color-ink-300) font-medium uppercase tracking-wide">Etablissement actuel</p>
+          <p className="text-xs text-(--color-ink-300) font-medium uppercase tracking-wide">Établissement actuel</p>
           <p className="font-display font-semibold text-(--color-ink-900)">
-            {medecin?.etablissementNom || 'Aucun etablissement (praticien independant)'}
+            {medecin?.etablissementNom || 'Aucun établissement (praticien indépendant)'}
           </p>
         </div>
       </Card>
 
       {invitationsEnAttente.length > 0 && (
         <div>
-          <h2 className="font-display font-semibold text-(--color-ink-900) mb-3">Invitations recues</h2>
+          <h2 className="font-display font-semibold text-(--color-ink-900) mb-3">Invitations reçues</h2>
           <div className="space-y-3">
             {invitationsEnAttente.map((d) => (
               <Card key={d.id} className="p-4 flex flex-wrap items-center justify-between gap-3 border-(--color-amber-400)/40">
@@ -137,18 +136,18 @@ export default function MedecinEtablissementPage() {
       )}
 
       <div>
-        <h2 className="font-display font-semibold text-(--color-ink-900) mb-3">Demander a rejoindre un etablissement</h2>
+        <h2 className="font-display font-semibold text-(--color-ink-900) mb-3">Demander à rejoindre un établissement</h2>
         <div className="relative mb-3">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--color-ink-300)" />
           <TextInput
-            placeholder="Rechercher un etablissement..."
+            placeholder="Rechercher un établissement..."
             value={recherche}
             onChange={(e) => setRecherche(e.target.value)}
             className="pl-9"
           />
         </div>
         {etablissementsFiltres.length === 0 ? (
-          <Card><EmptyState icon={Building2} title="Aucun etablissement trouve" description="Essayez une autre recherche." /></Card>
+          <Card><EmptyState icon={Building2} title="Aucun établissement trouvé" description="Essayez une autre recherche." /></Card>
         ) : (
           <div className="grid sm:grid-cols-2 gap-3">
             {etablissementsFiltres.map((e) => {
@@ -169,7 +168,7 @@ export default function MedecinEtablissementPage() {
                     onClick={() => handleDemander(e.id)}
                   >
                     <Send size={13} />
-                    {dejaMembre ? 'Membre' : dejaEnvoyee ? 'Demande envoyee' : 'Demander'}
+                    {dejaMembre ? 'Membre' : dejaEnvoyee ? 'Demande envoyée' : 'Demander'}
                   </Button>
                 </Card>
               );

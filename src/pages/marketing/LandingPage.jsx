@@ -13,15 +13,15 @@ const ESPACES = [
   {
     role: 'Patient',
     icon: FileHeart,
-    description: "Votre dossier medical, vos ordonnances et vos rendez-vous, toujours a portee de main.",
+    description: "Votre dossier médical, vos ordonnances et vos rendez-vous, toujours à portée de main.",
     accent: 'text-(--color-sage-500)',
     bg: 'bg-(--color-sage-100)',
     bar: 'bg-(--color-sage-500)',
   },
   {
-    role: 'Medecin',
+    role: 'Médecin',
     icon: Stethoscope,
-    description: "Gerez votre agenda, vos consultations et vos ordonnances numeriques depuis un seul espace.",
+    description: "Gérez votre agenda, vos consultations et vos ordonnances numériques depuis un seul espace.",
     accent: 'text-(--color-petrol-600)',
     bg: 'bg-(--color-petrol-50)',
     bar: 'bg-(--color-petrol-600)',
@@ -29,7 +29,7 @@ const ESPACES = [
   {
     role: 'Infirmier(e)',
     icon: HeartPulse,
-    description: "Recevez les demandes de soins a domicile des patients proches de vous et guidez-vous jusqu'a eux.",
+    description: "Recevez les demandes de soins à domicile des patients proches de vous et guidez-vous jusqu'à eux.",
     accent: 'text-(--color-amber-500)',
     bg: 'bg-(--color-amber-400)/20',
     bar: 'bg-(--color-amber-400)',
@@ -37,7 +37,7 @@ const ESPACES = [
   {
     role: 'Directeur',
     icon: Building2,
-    description: "Supervisez vos etablissements, vos equipes medicales et votre activite en un coup d'oeil.",
+    description: "Supervisez vos établissements, vos équipes médicales et votre activité en un coup d'œil.",
     accent: 'text-(--color-clay-500)',
     bg: 'bg-(--color-clay-100)',
     bar: 'bg-(--color-clay-500)',
@@ -45,7 +45,7 @@ const ESPACES = [
   {
     role: 'Administrateur',
     icon: UserCog,
-    description: "Validez les inscriptions professionnelles et gardez la plateforme fiable et securisee.",
+    description: "Validez les inscriptions professionnelles et gardez la plateforme fiable et sécurisée.",
     accent: 'text-(--color-petrol-600)',
     bg: 'bg-(--color-petrol-50)',
     bar: 'bg-(--color-petrol-600)',
@@ -55,32 +55,32 @@ const ESPACES = [
 const MODULES = [
   {
     icon: FileHeart,
-    title: 'Dossier medical electronique',
-    description: "Consultations, diagnostics et resultats d'analyses centralises et chiffres, accessibles a tout moment.",
+    title: 'Dossier médical électronique',
+    description: "Consultations, diagnostics et résultats d'analyses centralisés et chiffrés, accessibles à tout moment.",
     accent: 'text-(--color-petrol-600)',
     bg: 'from-white to-(--color-petrol-50)',
     iconBg: 'bg-(--color-petrol-600)',
   },
   {
     icon: QrCode,
-    title: 'Ordonnances numeriques',
-    description: 'Chaque ordonnance est verifiable en pharmacie via un code unique, sans papier a perdre.',
+    title: 'Ordonnances numériques',
+    description: 'Chaque ordonnance est vérifiable en pharmacie via un code unique, sans papier à perdre.',
     accent: 'text-(--color-amber-500)',
     bg: 'from-white to-(--color-amber-400)/15',
     iconBg: 'bg-(--color-amber-500)',
   },
   {
     icon: MapPin,
-    title: 'Specialistes geolocalises',
-    description: 'Trouvez le bon medecin pres de chez vous, trie par specialite et par distance reelle.',
+    title: 'Spécialistes géolocalisés',
+    description: 'Trouvez le bon médecin près de chez vous, triés par spécialité et par distance réelle.',
     accent: 'text-(--color-sage-500)',
     bg: 'from-white to-(--color-sage-100)',
     iconBg: 'bg-(--color-sage-500)',
   },
   {
     icon: CalendarCheck,
-    title: 'Rendez-vous instantanes',
-    description: 'Creneaux verifies en temps reel : plus de double reservation, confirmation immediate.',
+    title: 'Rendez-vous instantanés',
+    description: 'Créneaux vérifiés en temps réel : plus de double réservation, confirmation immédiate.',
     accent: 'text-(--color-clay-500)',
     bg: 'from-white to-(--color-clay-100)',
     iconBg: 'bg-(--color-clay-500)',
@@ -127,7 +127,7 @@ function MockSearchCard() {
       <div className="absolute -right-4 -bottom-4 sm:-right-8 sm:-bottom-6 bg-(--color-petrol-600) text-white rounded-2xl px-4 py-3 shadow-lg shadow-(--color-petrol-900)/30 animate-float">
         <p className="text-[11px] uppercase tracking-wider text-(--color-amber-400) font-semibold">Rendez-vous</p>
         <p className="text-sm font-display font-semibold flex items-center gap-1.5 mt-0.5">
-          <CalendarCheck size={14} /> Creneau confirme
+          <CalendarCheck size={14} /> Créneau confirmé
         </p>
       </div>
     </div>
@@ -174,34 +174,34 @@ export default function LandingPage() {
                 <span className="absolute inset-0 rounded-full bg-(--color-sage-500) animate-pulse-dot" />
                 <span className="w-1.5 h-1.5 rounded-full bg-(--color-sage-500)" />
               </span>
-              Pensee pour le Cameroun
+              Pensée pour le Cameroun
             </span>
             <h1 className="font-display font-bold text-4xl sm:text-5xl leading-[1.08] text-(--color-petrol-700) mt-5">
-              Votre sante, vos specialistes,{' '}
+              Votre santé, vos spécialistes,{' '}
               <span className="bg-gradient-to-r from-(--color-petrol-600) to-(--color-sage-500) bg-clip-text text-transparent">
-                a portee de main.
+                à portée de main.
               </span>
             </h1>
             <p className="text-(--color-ink-600) text-lg mt-5 max-w-md">
-              MediLinkPro relie patients et professionnels de sante : dossier medical
-              numerique, recherche de specialistes geolocalises et prise de rendez-vous
+              MediLinkPro relie les patients et professionnels de santé : dossier médical
+              numérique, recherche de spécialistes géolocalisés et prise de rendez-vous
               en quelques clics.
             </p>
             <div className="flex flex-wrap items-center gap-3 mt-8">
               <Link to="/inscription">
                 <Button variant="amber" className="text-base px-5 py-3">
-                  Creer mon compte <ArrowRight size={17} />
+                  Créer mon compte <ArrowRight size={17} />
                 </Button>
               </Link>
               <Link to="/connexion">
                 <Button variant="ghost" className="text-base px-5 py-3">
-                  J'ai deja un compte
+                  J'ai déjà un compte
                 </Button>
               </Link>
             </div>
             <div className="flex items-center gap-2 text-sm text-(--color-ink-600) mt-7">
               <ShieldCheck size={16} className="text-(--color-sage-500)" />
-              Dossiers medicaux chiffres et confidentiels
+              Dossiers médicaux chiffrés et confidentiels
             </div>
           </Reveal>
 
@@ -219,8 +219,8 @@ export default function LandingPage() {
               Tout le parcours de soin, dans une seule application.
             </h2>
             <p className="text-(--color-ink-600) mt-3">
-              De la prise de rendez-vous a l'ordonnance numerique, chaque etape est
-              pensee pour vous faire gagner du temps.
+              De la prise de rendez-vous à l'ordonnance numérique, chaque étape est
+              pensée pour vous faire gagner du temps.
             </p>
           </div>
         </Reveal>
@@ -250,10 +250,10 @@ export default function LandingPage() {
         <Reveal>
           <div className="max-w-xl">
             <h2 className="font-display font-bold text-2xl sm:text-3xl text-(--color-petrol-700)">
-              Un espace pense pour chaque metier de la sante.
+              Un espace pense pour chaque métier de la santé.
             </h2>
             <p className="text-(--color-ink-600) mt-3">
-              Patient, medecin, infirmier(e), directeur d'etablissement ou administrateur :
+              Patient, médecin, infirmier(e), directeur d'établissement ou administrateur :
               chacun retrouve les outils qui lui correspondent.
             </p>
           </div>
@@ -295,14 +295,14 @@ export default function LandingPage() {
             <div className="absolute -left-12 -top-12 w-56 h-56 rounded-full bg-(--color-amber-400)/15 animate-blob" aria-hidden="true" />
             <div className="absolute right-0 bottom-0 w-40 h-40 rounded-full bg-(--color-sage-500)/10 animate-blob-slow" aria-hidden="true" />
             <h2 className="relative font-display font-bold text-2xl sm:text-3xl text-white">
-              Pret a simplifier votre suivi medical ?
+              Prêt à simplifier votre suivi médical ?
             </h2>
             <p className="relative text-white/80 mt-3 max-w-md mx-auto">
               Rejoignez MediLinkPro en quelques minutes, gratuitement.
             </p>
             <Link to="/inscription" className="relative inline-block mt-7">
               <Button variant="amber" className="text-base px-6 py-3">
-                Creer mon compte <ArrowRight size={17} />
+                Créer mon compte <ArrowRight size={17} />
               </Button>
             </Link>
           </div>
@@ -317,7 +317,7 @@ export default function LandingPage() {
             <Stethoscope size={15} className="text-(--color-petrol-600)" />
             <span className="font-display font-semibold text-(--color-petrol-700)">MediLinkPro</span>
           </div>
-          <p>Suivi medical et localisation des specialistes — Cameroun</p>
+          <p>Suivi médical et localisation des spécialistes — Cameroun</p>
         </div>
       </footer>
     </div>

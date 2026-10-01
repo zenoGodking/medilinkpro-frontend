@@ -63,3 +63,25 @@ Modifiez-le si votre backend tourne sur un autre port/hote.
 - Le build de production (`npm run build`) genere le dossier `dist/`.
 - Contrairement au backend Spring Boot, ce frontend a pu etre compile et builde
   avec succes dans l'environnement de generation (`npm run build` → succes).
+
+## Configuration (variables Vite)
+
+| Variable | Role | Defaut |
+|---|---|---|
+| `VITE_API_BASE_URL` | URL du backend | `http://localhost:8080` |
+| `VITE_ROUTAGE_URL` | serveur OSRM pour les itineraires dans l'application | serveur public de demonstration (a remplacer en production) |
+| `VITE_TUILES_URL` | fonds de carte | OpenStreetMap |
+| `VITE_ICE_SERVERS` | serveurs STUN/TURN (JSON) de la teleconsultation | STUN public Google |
+
+## Tests
+
+```bash
+npm test          # Vitest + Testing Library (parcours critiques)
+npm run lint
+```
+
+## Mode reseau faible
+
+Le service worker (`public/sw.js`) met l'application en cache et garde une copie de secours des donnees lues
+(par session, 24 h max, effacee a la deconnexion). Les lectures sont retentees automatiquement, les photos sont
+compressees avant envoi et la teleconsultation propose une video allegee. Un bandeau signale l'etat du reseau.

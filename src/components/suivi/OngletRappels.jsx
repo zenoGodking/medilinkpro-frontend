@@ -24,7 +24,7 @@ export default function OngletRappels({ patientId, estPatient }) {
       setForm({ medicament: '', dosage: '', heures: ['08:00'], dateFin: '' });
       charger();
     } catch (err) {
-      setErreur(err.response?.data?.message || "Le rappel n'a pas pu etre cree.");
+      setErreur(err.response?.data?.message || "Le rappel n'a pas pu être créé.");
     }
   }
 
@@ -35,7 +35,7 @@ export default function OngletRappels({ patientId, estPatient }) {
   return (
     <div className="space-y-4">
       {rappels.length === 0 ? (
-        <p className="text-sm text-(--color-ink-600)">Aucun traitement enregistre.</p>
+        <p className="text-sm text-(--color-ink-600)">Aucun traitement enregistré.</p>
       ) : (
         <ul className="divide-y divide-(--color-petrol-100)">
           {rappels.map((r) => (
@@ -65,18 +65,18 @@ export default function OngletRappels({ patientId, estPatient }) {
         </ul>
       )}
 
-      {estPatient && <NotificationsPushCard raison="Recevez une notification a chaque heure de prise, meme application fermee." />}
+      {estPatient && <NotificationsPushCard raison="Recevez une notification à chaque heure de prise, même application fermée." />}
 
       {estPatient && (
         <form onSubmit={enregistrer} className="rounded-xl bg-(--color-petrol-50) p-4 space-y-3">
           <div className="grid sm:grid-cols-2 gap-3">
             <div>
-              <FieldLabel>Medicament</FieldLabel>
+              <FieldLabel>Médicament</FieldLabel>
               <TextInput required value={form.medicament} placeholder="Metformine" onChange={(e) => setForm((f) => ({ ...f, medicament: e.target.value }))} />
             </div>
             <div>
               <FieldLabel>Dose</FieldLabel>
-              <TextInput value={form.dosage} placeholder="500 mg, 1 comprime" onChange={(e) => setForm((f) => ({ ...f, dosage: e.target.value }))} />
+              <TextInput value={form.dosage} placeholder="500 mg, 1 comprimé" onChange={(e) => setForm((f) => ({ ...f, dosage: e.target.value }))} />
             </div>
           </div>
           <div>

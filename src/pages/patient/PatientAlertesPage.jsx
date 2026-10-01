@@ -3,17 +3,18 @@ import { BellRing, MapPin, MessageSquare, Send, X, Clock, UserCheck, History, St
 import { creerAlerte, annulerAlerte, noterAlerte, getMesAlertes, getSuiviInfirmier } from '../../api/alertes';
 import { lirePositionActuelle } from '../../hooks/usePositionGps';
 import CarteSuivi from '../../components/CarteSuivi';
+import ProfilInfirmierCard from '../../components/ProfilInfirmierCard';
 import { getToken } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import { useAlerteSocket } from '../../hooks/useAlerteSocket';
 import { Card, Button, TextInput, FieldLabel, Textarea, Spinner, PageHeader, EmptyState } from '../../components/ui';
 
 const STATUT_META = {
-  EN_ATTENTE: { label: "En attente d'une infirmiere", className: 'bg-(--color-amber-400)/20 text-(--color-amber-500)' },
+  EN_ATTENTE: { label: "En attente d'une infirmière", className: 'bg-(--color-amber-400)/20 text-(--color-amber-500)' },
   REPONDUE: { label: 'En cours', className: 'bg-(--color-sage-100) text-(--color-sage-500)' },
-  SERVICE_RENDU: { label: 'A noter', className: 'bg-(--color-amber-400)/20 text-(--color-amber-500)' },
-  TERMINEE: { label: 'Terminee', className: 'bg-(--color-petrol-100) text-(--color-petrol-600)' },
-  ANNULEE: { label: 'Annulee', className: 'bg-(--color-clay-100) text-(--color-clay-500)' },
+  SERVICE_RENDU: { label: 'À noter', className: 'bg-(--color-amber-400)/20 text-(--color-amber-500)' },
+  TERMINEE: { label: 'Terminée', className: 'bg-(--color-petrol-100) text-(--color-petrol-600)' },
+  ANNULEE: { label: 'Annulée', className: 'bg-(--color-clay-100) text-(--color-clay-500)' },
 };
 
 const STATUTS_EN_COURS = ['EN_ATTENTE', 'REPONDUE', 'SERVICE_RENDU'];
@@ -129,7 +130,7 @@ export default function PatientAlertesPage() {
       setHistorique((prev) => [alerte, ...prev]);
       setForm({ adresse: '', message: '' });
     } catch {
-      setErreur("Impossible d'envoyer l'alerte pour le moment. Reessayez.");
+      setErreur("Impossible d'envoyer l'alerte pour le moment. Réessayez.");
     } finally {
       setEnvoi(false);
     }
@@ -169,13 +170,13 @@ export default function PatientAlertesPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Soins a domicile"
-        description="Envoyez une alerte : les infirmieres disponibles les plus proches de vous sont prevenues instantanement."
+        title="Soins à domicile"
+        description="Envoyez une alerte : les infirmières disponibles les plus proches de vous sont prévenues instantanément."
       />
 
       {infoRetractation && (
         <div className="flex items-center gap-2 bg-(--color-amber-400)/20 text-(--color-amber-500) text-sm font-medium rounded-xl px-4 py-3">
-          <RefreshCw size={15} /> L'infirmiere s'est desistee suite a un imprevu. Votre alerte est de nouveau proposee aux infirmieres.
+          <RefreshCw size={15} /> L'infirmière s'est désistée suite à un imprévu. Votre alerte est de nouveau proposée aux infirmières.
         </div>
       )}
       {erreur && (
@@ -206,20 +207,20 @@ export default function PatientAlertesPage() {
             </div>
             <div>
               <p className="font-display font-semibold text-(--color-ink-900)">
-                {alerteEnCours.statut === 'EN_ATTENTE' && "Votre alerte a ete envoyee"}
-                {alerteEnCours.statut === 'REPONDUE' && 'Alerte repondue !'}
-                {alerteEnCours.statut === 'SERVICE_RENDU' && 'Intervention terminee'}
+                {alerteEnCours.statut === 'EN_ATTENTE' && "Votre alerte a été envoyée"}
+                {alerteEnCours.statut === 'REPONDUE' && 'Alerte répondue !'}
+                {alerteEnCours.statut === 'SERVICE_RENDU' && 'Intervention terminée'}
               </p>
               <p className="text-sm text-(--color-ink-600)">
                 {alerteEnCours.statut === 'EN_ATTENTE' && (
                   alerteEnCours.diffusionGenerale
-                    ? "Proposee a toutes les infirmieres connectees. En attente d'une reponse..."
-                    : `Proposee aux ${alerteEnCours.nombreInfirmiersNotifies} infirmieres les plus proches de vous. Si aucune ne repond, la recherche s'elargit automatiquement.`
+                    ? "Proposée à toutes les infirmières connectées. En attente d'une réponse..."
+                    : `Proposée aux ${alerteEnCours.nombreInfirmiersNotifies} infirmières les plus proches de vous. Si aucune ne répond, la recherche s'élargit automatiquement.`
                 )}
                 {alerteEnCours.statut === 'REPONDUE' &&
-                  `${alerteEnCours.infirmierPrenom} ${alerteEnCours.infirmierNom}, infirmier(e), a repondu present et arrive.`}
+                  `${alerteEnCours.infirmierPrenom} ${alerteEnCours.infirmierNom}, infirmier(e), a répondu présent et arrive.`}
                 {alerteEnCours.statut === 'SERVICE_RENDU' &&
-                  `${alerteEnCours.infirmierPrenom} ${alerteEnCours.infirmierNom} a termine le soin. Vous pouvez noter l'intervention.`}
+                  `${alerteEnCours.infirmierPrenom} ${alerteEnCours.infirmierNom} a terminé le soin. Vous pouvez noter l'intervention.`}
               </p>
             </div>
           </div>
@@ -231,13 +232,14 @@ export default function PatientAlertesPage() {
           {alerteEnCours.statut === 'EN_ATTENTE' && sansPosition && (
             <div className="mt-4 flex items-start gap-2 text-sm text-(--color-ink-600) bg-(--color-petrol-50) rounded-xl px-4 py-3">
               <LocateOff size={15} className="mt-0.5 shrink-0" />
-              Votre position n'a pas pu etre lue : l'alerte a ete envoyee a toutes les infirmieres.
-              Autorisez la localisation la prochaine fois pour prevenir les plus proches en priorite.
+              Votre position n'a pas pu être lue : l'alerte a été envoyée à toutes les infirmières.
+              Autorisez la localisation la prochaine fois pour prévenir les plus proches en priorité.
             </div>
           )}
 
           {alerteEnCours.statut === 'REPONDUE' && (
             <div className="mt-5 space-y-3">
+              {alerteEnCours.infirmierId && <ProfilInfirmierCard infirmierId={alerteEnCours.infirmierId} />}
               {alerteEnCours.infirmierTelephone && (
                 <a
                   href={`tel:${alerteEnCours.infirmierTelephone}`}
@@ -252,7 +254,7 @@ export default function PatientAlertesPage() {
               )}
               <div className="flex items-center justify-between text-sm">
                 <span className="flex items-center gap-1.5 font-semibold text-(--color-ink-900)">
-                  <Navigation size={15} className="text-(--color-amber-500)" /> Suivi en temps reel
+                  <Navigation size={15} className="text-(--color-amber-500)" /> Suivi en temps réel
                 </span>
                 {suiviActif?.distanceKm != null && (
                   <span className="text-(--color-ink-600)">a {suiviActif.distanceKm.toLocaleString('fr-FR')} km de vous</span>
@@ -265,7 +267,7 @@ export default function PatientAlertesPage() {
                 />
               ) : (
                 <p className="text-sm text-(--color-ink-600) bg-(--color-petrol-50) rounded-xl px-4 py-3">
-                  La position de l'infirmiere s'affichera ici des qu'elle sera partagee.
+                  La position de l'infirmière s'affichera ici dès qu'elle sera partagée.
                 </p>
               )}
             </div>
@@ -280,16 +282,17 @@ export default function PatientAlertesPage() {
           {alerteEnCours.statut === 'REPONDUE' && (
             <div className="mt-5 flex items-center gap-2 text-sm text-(--color-ink-600) bg-(--color-petrol-50) rounded-xl px-4 py-3">
               <ClipboardCheck size={15} className="shrink-0 text-(--color-petrol-400)" />
-              Vous pourrez noter l'intervention des que l'infirmiere aura envoye son compte-rendu.
+              Vous pourrez noter l'intervention dès que l'infirmière aura envoyé son compte-rendu.
             </div>
           )}
 
           {alerteEnCours.statut === 'SERVICE_RENDU' && (
             <div className="mt-6 pt-6 border-t border-(--color-petrol-100) space-y-4">
+              {alerteEnCours.infirmierId && <ProfilInfirmierCard infirmierId={alerteEnCours.infirmierId} />}
               {alerteEnCours.compteRendu && (
                 <div className="bg-(--color-petrol-50) rounded-xl px-4 py-3">
                   <p className="text-xs font-semibold text-(--color-petrol-600) uppercase tracking-wide mb-1">
-                    Compte-rendu de l'infirmiere
+                    Compte-rendu de l'infirmière
                   </p>
                   <p className="text-sm text-(--color-ink-600)">{alerteEnCours.compteRendu}</p>
                 </div>
@@ -317,7 +320,7 @@ export default function PatientAlertesPage() {
               <FieldLabel>Adresse d'intervention</FieldLabel>
               <TextInput
                 required
-                placeholder="Ex: Quartier Bastos, rue 1.234, Yaounde"
+                placeholder="Ex: Quartier Bastos, rue 1.234, Yaoundé"
                 value={form.adresse}
                 onChange={(e) => setForm((prev) => ({ ...prev, adresse: e.target.value }))}
               />
@@ -326,14 +329,14 @@ export default function PatientAlertesPage() {
               <FieldLabel>Message (optionnel)</FieldLabel>
               <Textarea
                 rows={3}
-                placeholder="Decrivez brievement le soin necessaire..."
+                placeholder="Décrivez brièvement le soin nécessaire..."
                 value={form.message}
                 onChange={(e) => setForm((prev) => ({ ...prev, message: e.target.value }))}
               />
             </div>
             <Button type="submit" variant="amber" disabled={envoi} className="w-full">
               <Send size={15} />
-              {localisation ? 'Localisation...' : envoi ? 'Envoi en cours...' : "Envoyer l'alerte aux infirmieres proches"}
+              {localisation ? 'Localisation...' : envoi ? 'Envoi en cours...' : "Envoyer l'alerte aux infirmières proches"}
             </Button>
           </form>
         </Card>
@@ -346,7 +349,7 @@ export default function PatientAlertesPage() {
         {loadingHistorique ? (
           <div className="flex justify-center py-10"><Spinner className="w-6 h-6" /></div>
         ) : historique.length === 0 ? (
-          <Card><EmptyState icon={BellRing} title="Aucune alerte envoyee" description="Votre historique d'alertes apparaitra ici." /></Card>
+          <Card><EmptyState icon={BellRing} title="Aucune alerte envoyée" description="Votre historique d'alertes apparaîtra ici." /></Card>
         ) : (
           <div className="space-y-2.5">
             {historique.map((a) => (

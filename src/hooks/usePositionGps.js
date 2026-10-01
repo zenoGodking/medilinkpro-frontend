@@ -66,7 +66,7 @@ export function usePositionGps(actif, onPosition, { intervalleMs = 5000, deplace
 
   return {
     position,
-    erreur: disponible ? erreur : "La geolocalisation n'est pas disponible sur cet appareil.",
+    erreur: disponible ? erreur : "La géolocalisation n'est pas disponible sur cet appareil.",
   };
 }
 

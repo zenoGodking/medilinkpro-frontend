@@ -21,8 +21,8 @@ export default function PharmacienScanPage() {
   return (
     <div className="space-y-6 max-w-xl">
       <PageHeader
-        title="Verifier une ordonnance"
-        description="Scannez le QR code presente par le patient pour verifier l'ordonnance puis la delivrer."
+        title="Vérifier une ordonnance"
+        description="Scannez le QR code présenté par le patient pour vérifier l'ordonnance puis la délivrer."
       />
       <Card className="p-5 space-y-4">
         <ScannerQr onCode={lu} />
@@ -31,7 +31,7 @@ export default function PharmacienScanPage() {
         )}
         <p className="flex items-start gap-2 text-sm text-(--color-ink-600)">
           <ScanLine size={16} className="mt-0.5 shrink-0" />
-          Vous pouvez aussi scanner le code avec l'appareil photo de votre telephone : le lien ouvre directement l'ordonnance.
+          Vous pouvez aussi scanner le code avec l'appareil photo de votre téléphone : le lien ouvre directement l'ordonnance.
         </p>
       </Card>
     </div>

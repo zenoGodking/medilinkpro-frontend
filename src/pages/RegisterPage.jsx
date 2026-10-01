@@ -25,12 +25,15 @@ const GROUPE_LABELS = {
 // L'inscription ADMIN n'est volontairement pas proposee ici : un administrateur
 // est cree par un administrateur existant, pas via l'inscription publique.
 const ROLES = [
-  { value: 'PATIENT', label: 'Patient', description: 'Suivre mon dossier medical et prendre rendez-vous', icon: User },
-  { value: 'MEDECIN', label: 'Medecin', description: 'Proposer des consultations et gerer mon agenda', icon: Stethoscope },
-  { value: 'INFIRMIER', label: 'Infirmier(e)', description: 'Repondre aux alertes de soins a domicile', icon: HeartPulse },
-  { value: 'PHARMACIEN', label: 'Pharmacien(ne)', description: 'Verifier et delivrer les ordonnances', icon: Pill },
-  { value: 'DIRECTEUR', label: 'Directeur', description: "Superviser un etablissement de sante", icon: Building2 },
+  { value: 'PATIENT', label: 'Patient', description: 'Suivre mon dossier médical et prendre rendez-vous', icon: User },
+  { value: 'MEDECIN', label: 'Médecin', description: 'Proposer des consultations et gérer mon agenda', icon: Stethoscope },
+  { value: 'INFIRMIER', label: 'Infirmier(e)', description: 'Répondre aux alertes de soins à domicile', icon: HeartPulse },
+  { value: 'PHARMACIEN', label: 'Pharmacien(ne)', description: 'Vérifier et délivrer les ordonnances', icon: Pill },
+  { value: 'DIRECTEUR', label: 'Directeur', description: "Superviser un établissement de santé", icon: Building2 },
 ];
+
+// Roles dont l'inscription exige une photo : patient (reconnaissance d'urgence), infirmiere (profil montre au patient).
+const PHOTO_OBLIGATOIRE = ['PATIENT', 'INFIRMIER'];
 
 const INITIAL_FORM = {
   nom: '', prenom: '', email: '', motDePasse: '', telephone: '',
@@ -89,7 +92,7 @@ export default function RegisterPage() {
         }),
       };
 
-      const response = await register(payload, role === 'PATIENT' ? visage : undefined);
+      const response = await register(payload, PHOTO_OBLIGATOIRE.includes(role) ? visage : undefined);
 
       if (response.token) {
         // PATIENT : compte approuve immediatement, connexion directe.
@@ -110,10 +113,10 @@ export default function RegisterPage() {
           <div className="w-14 h-14 rounded-2xl bg-(--color-sage-100) flex items-center justify-center mx-auto mb-5">
             <CheckCircle2 size={26} className="text-(--color-sage-500)" />
           </div>
-          <h1 className="font-display font-bold text-2xl text-(--color-petrol-700)">Demande envoyee</h1>
+          <h1 className="font-display font-bold text-2xl text-(--color-petrol-700)">Demande envoyée</h1>
           <p className="text-(--color-ink-600) mt-3">{pendingMessage}</p>
           <Link to="/connexion" className="inline-block mt-7">
-            <Button variant="ghost">Retour a la connexion</Button>
+            <Button variant="ghost">Retour à la connexion</Button>
           </Link>
         </div>
       </div>
@@ -124,7 +127,7 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-(--color-ivory) flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-md">
         <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-(--color-ink-600) font-medium mb-6 hover:text-(--color-petrol-600) transition-colors">
-          <ArrowLeft size={15} /> Retour a l'accueil
+          <ArrowLeft size={15} /> Retour à l'accueil
         </Link>
 
         <div className="flex flex-col items-center mb-8">
@@ -133,7 +136,7 @@ export default function RegisterPage() {
           </div>
           <h1 className="font-display font-bold text-2xl text-(--color-petrol-700)">Rejoindre MediLinkPro</h1>
           <p className="text-sm text-(--color-ink-600) mt-1 text-center">
-            Choisissez votre profil pour creer votre espace.
+            Choisissez votre profil pour créer votre espace.
           </p>
         </div>
 
@@ -160,7 +163,7 @@ export default function RegisterPage() {
           {role !== 'PATIENT' && (
             <div className="flex items-start gap-2 bg-(--color-amber-400)/15 text-(--color-amber-500) text-sm rounded-xl px-3.5 py-3 mb-4">
               <AlertCircle size={16} className="mt-0.5 shrink-0" />
-              <span>Ce profil necessite une validation par un administrateur avant la premiere connexion.</span>
+              <span>Ce profil nécessite une validation par un administrateur avant la première connexion.</span>
             </div>
           )}
 
@@ -174,7 +177,7 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <FieldLabel>Prenom</FieldLabel>
+                <FieldLabel>Prénom</FieldLabel>
                 <TextInput required value={form.prenom} onChange={(e) => update('prenom', e.target.value)} />
               </div>
               <div>
@@ -199,15 +202,15 @@ export default function RegisterPage() {
               <TextInput
                 type="password"
                 required
-                minLength={6}
-                placeholder="Au moins 6 caracteres"
+                minLength={8}
+                placeholder="Au moins 8 caractères"
                 value={form.motDePasse}
                 onChange={(e) => update('motDePasse', e.target.value)}
               />
             </div>
 
             <div>
-              <FieldLabel>Telephone</FieldLabel>
+              <FieldLabel>Téléphone</FieldLabel>
               <TextInput
                 type="tel"
                 placeholder="+237 6XX XXX XXX"
@@ -239,15 +242,15 @@ export default function RegisterPage() {
                 <div>
                   <FieldLabel>Allergies connues</FieldLabel>
                   <TextInput
-                    placeholder="Penicilline, arachides... (laisser vide si aucune)"
+                    placeholder="Pénicilline, arachides... (laisser vide si aucune)"
                     value={form.allergies}
                     onChange={(e) => update('allergies', e.target.value)}
                   />
                 </div>
                 <div>
-                  <FieldLabel>A signaler aux secours</FieldLabel>
+                  <FieldLabel>À signaler aux secours</FieldLabel>
                   <TextInput
-                    placeholder="Asthme, diabete, epilepsie, pacemaker..."
+                    placeholder="Asthme, diabète, épilepsie, pacemaker..."
                     value={form.conditionsUrgence}
                     onChange={(e) => update('conditionsUrgence', e.target.value)}
                   />
@@ -257,7 +260,7 @@ export default function RegisterPage() {
                   <CapturePhotoVisage onResultat={setVisage} />
                   <p className="text-xs text-(--color-ink-600) mt-1.5">
                     En cas d'accident, elle permet aux secours de retrouver votre groupe sanguin,
-                    vos allergies et le numero de votre proche.
+                    vos allergies et le numéro de votre proche.
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
@@ -270,7 +273,7 @@ export default function RegisterPage() {
                     />
                   </div>
                   <div>
-                    <FieldLabel>Contact d'urgence (telephone)</FieldLabel>
+                    <FieldLabel>Contact d'urgence (téléphone)</FieldLabel>
                     <TextInput
                       type="tel"
                       placeholder="+237 6XX XXX XXX"
@@ -291,31 +294,41 @@ export default function RegisterPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <FieldLabel>Numero d'agrement</FieldLabel>
+                    <FieldLabel>Numéro d'agrément</FieldLabel>
                     <TextInput required value={form.numeroAgrement} onChange={(e) => update('numeroAgrement', e.target.value)} />
                   </div>
                   <div>
                     <FieldLabel>Ville</FieldLabel>
-                    <TextInput placeholder="Yaounde" value={form.ville} onChange={(e) => update('ville', e.target.value)} />
+                    <TextInput placeholder="Yaoundé" value={form.ville} onChange={(e) => update('ville', e.target.value)} />
                   </div>
                 </div>
               </>
             )}
 
+            {role === 'INFIRMIER' && (
+              <div>
+                <FieldLabel>Photo de profil (obligatoire)</FieldLabel>
+                <CapturePhotoVisage onResultat={setVisage} libelle="Prendre ou choisir ma photo" />
+                <p className="text-xs text-(--color-ink-600) mt-1.5">
+                  Elle est montrée au patient lorsque vous acceptez sa demande de soins, pour qu'il sache qui va venir chez lui.
+                </p>
+              </div>
+            )}
+
             {role === 'MEDECIN' && (
               <>
                 <div>
-                  <FieldLabel>Specialite</FieldLabel>
+                  <FieldLabel>Spécialité</FieldLabel>
                   <TextInput
                     required
-                    placeholder="Cardiologie, pediatrie..."
+                    placeholder="Cardiologie, pédiatrie..."
                     value={form.specialite}
                     onChange={(e) => update('specialite', e.target.value)}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <FieldLabel>Numero d'ordre</FieldLabel>
+                    <FieldLabel>Numéro d'ordre</FieldLabel>
                     <TextInput
                       required
                       placeholder="CM-12345"
@@ -338,7 +351,7 @@ export default function RegisterPage() {
                   <div>
                     <FieldLabel>Ville</FieldLabel>
                     <TextInput
-                      placeholder="Yaounde"
+                      placeholder="Yaoundé"
                       value={form.ville}
                       onChange={(e) => update('ville', e.target.value)}
                     />
@@ -355,14 +368,14 @@ export default function RegisterPage() {
               </>
             )}
 
-            <Button type="submit" disabled={loading || (role === 'PATIENT' && !visage)} className="w-full">
-              {loading ? 'Creation du compte...' : 'Creer mon compte'}
+            <Button type="submit" disabled={loading || (PHOTO_OBLIGATOIRE.includes(role) && !visage)} className="w-full">
+              {loading ? 'Création du compte...' : 'Créer mon compte'}
             </Button>
           </form>
         </div>
 
         <p className="text-center text-sm text-(--color-ink-600) mt-5">
-          Deja un compte ?{' '}
+          Déjà un compte ?{' '}
           <Link to="/connexion" className="font-semibold text-(--color-petrol-600) hover:underline">
             Se connecter
           </Link>

@@ -3,6 +3,7 @@ import { CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { getMedecin, updateMedecin } from '../../api/medecins';
 import { Card, Button, Spinner, FieldLabel, TextInput, PageHeader } from '../../components/ui';
+import AvisMedecin from '../../components/AvisMedecin';
 
 export default function MedecinProfilPage() {
   const { user } = useAuth();
@@ -61,7 +62,7 @@ export default function MedecinProfilPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <FieldLabel>Prenom</FieldLabel>
+              <FieldLabel>Prénom</FieldLabel>
               <TextInput value={form.prenom || ''} onChange={(e) => update('prenom', e.target.value)} />
             </div>
             <div>
@@ -71,19 +72,20 @@ export default function MedecinProfilPage() {
           </div>
 
           <div>
-            <FieldLabel>Telephone</FieldLabel>
+            <FieldLabel>Téléphone</FieldLabel>
             <TextInput value={form.telephone || ''} onChange={(e) => update('telephone', e.target.value)} />
           </div>
 
           <div>
-            <FieldLabel>Specialite</FieldLabel>
+            <FieldLabel>Spécialité</FieldLabel>
             <TextInput value={form.specialite || ''} onChange={(e) => update('specialite', e.target.value)} />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <FieldLabel>Numero d'ordre</FieldLabel>
-              <TextInput value={form.numeroOrdre || ''} onChange={(e) => update('numeroOrdre', e.target.value)} />
+              <FieldLabel>Numéro d'ordre</FieldLabel>
+              <TextInput value={form.numeroOrdre || ''} disabled readOnly />
+              <p className="text-xs text-(--color-ink-600) mt-1">Vérifié à la validation de votre compte : contactez l'administrateur pour le modifier.</p>
             </div>
             <div>
               <FieldLabel>Tarif (FCFA)</FieldLabel>
@@ -94,7 +96,7 @@ export default function MedecinProfilPage() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <FieldLabel>Ville</FieldLabel>
-              <TextInput placeholder="Yaounde" value={form.ville || ''} onChange={(e) => update('ville', e.target.value)} />
+              <TextInput placeholder="Yaoundé" value={form.ville || ''} onChange={(e) => update('ville', e.target.value)} />
             </div>
             <div>
               <FieldLabel>Quartier</FieldLabel>
@@ -102,7 +104,7 @@ export default function MedecinProfilPage() {
             </div>
           </div>
           <p className="text-xs text-(--color-ink-300)">
-            La ville et le quartier determinent votre visibilite dans la recherche des patients.
+            La ville et le quartier déterminent votre visibilité dans la recherche des patients.
           </p>
 
           <div className="flex items-center gap-3">
@@ -111,11 +113,16 @@ export default function MedecinProfilPage() {
             </Button>
             {saved && (
               <span className="flex items-center gap-1.5 text-sm text-(--color-sage-500) font-medium">
-                <CheckCircle2 size={15} /> Enregistre
+                <CheckCircle2 size={15} /> Enregistré
               </span>
             )}
           </div>
         </form>
+      </Card>
+
+      <Card className="p-6">
+        <h2 className="font-display font-semibold text-lg text-(--color-ink-900) mb-3">Avis de vos patients</h2>
+        <AvisMedecin medecinId={user.userId} limite={20} />
       </Card>
     </div>
   );

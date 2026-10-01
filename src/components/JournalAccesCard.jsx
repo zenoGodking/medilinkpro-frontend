@@ -4,16 +4,16 @@ import { Card, Spinner } from './ui';
 import { getJournalAcces } from '../api/carnets';
 
 const TYPES = {
-  LECTURE: { icon: Eye, texte: 'a consulte votre carnet' },
-  ECRITURE: { icon: PenLine, texte: 'a ecrit dans votre carnet' },
-  RECONNAISSANCE_FACIALE: { icon: ScanFace, texte: "a scanne un visage qui vous ressemble et vu vos informations d'urgence" },
-  CARNET_URGENCE: { icon: Siren, texte: "a ouvert votre carnet en urgence apres un scan" },
-  CARTE_URGENCE: { icon: QrCode, texte: "a scanne votre carte d'urgence" },
-  PHARMACIE: { icon: Pill, texte: 'a consulte ou delivre une de vos ordonnances' },
-  DECLARATION_DECES: { icon: HeartCrack, texte: 'a declare un deces' },
+  LECTURE: { icon: Eye, texte: 'a consulté votre carnet' },
+  ECRITURE: { icon: PenLine, texte: 'a écrit dans votre carnet' },
+  RECONNAISSANCE_FACIALE: { icon: ScanFace, texte: "a scanné un visage qui vous ressemble et vu vos informations d'urgence" },
+  CARNET_URGENCE: { icon: Siren, texte: "a ouvert votre carnet en urgence après un scan" },
+  CARTE_URGENCE: { icon: QrCode, texte: "a scanné votre carte d'urgence" },
+  PHARMACIE: { icon: Pill, texte: 'a consulté ou délivré une de vos ordonnances' },
+  DECLARATION_DECES: { icon: HeartCrack, texte: 'a déclaré un décès' },
 };
 
-const ROLES = { MEDECIN: 'Medecin', INFIRMIER: 'Infirmier(e)', ADMIN: 'Administrateur', PHARMACIEN: 'Pharmacien(ne)', PATIENT: 'Un utilisateur' };
+const ROLES = { MEDECIN: 'Médecin', INFIRMIER: 'Infirmier(e)', ADMIN: 'Administrateur', PHARMACIEN: 'Pharmacien(ne)', PATIENT: 'Un utilisateur' };
 
 function qui(a) {
   if (!a.nom) return ROLES[a.role] || 'Un utilisateur';
@@ -34,16 +34,16 @@ export default function JournalAccesCard() {
   return (
     <Card className="p-5">
       <h2 className="flex items-center gap-2 font-display font-semibold text-(--color-ink-900)">
-        <History size={18} className="text-(--color-petrol-600)" /> Qui a consulte mon carnet
+        <History size={18} className="text-(--color-petrol-600)" /> Qui a consulté mon carnet
       </h2>
       <p className="text-sm text-(--color-ink-600) mt-0.5">
-        Tout medecin peut consulter votre carnet ; chaque acces est enregistre ici.
+        Tout médecin peut consulter votre carnet ; chaque accès est enregistré ici.
       </p>
 
       {!journal ? (
         <div className="flex justify-center py-4"><Spinner className="w-5 h-5" /></div>
       ) : journal.length === 0 ? (
-        <p className="text-sm text-(--color-ink-600) mt-4">Personne n'a encore consulte votre carnet.</p>
+        <p className="text-sm text-(--color-ink-600) mt-4">Personne n'a encore consulté votre carnet.</p>
       ) : (
         <>
           <ul className="mt-4 divide-y divide-(--color-petrol-100)">
